@@ -21,7 +21,7 @@ We propose \textbf{\methodfull (\method)}, a split-context prompt scheme that ad
 \textbf{Phase 2 (Adaptation)} analyzes actual data content to detect heterogeneity or potential attacks \emph{before} the main reasoning phase, ensuring adversarial content never reaches the decision logic.
 \textbf{Phase 3 (Execution)} processes each evidence source independently and aggregates results using three-valued logic that explicitly handles uncertainty---enabling correct compositional reasoning while preserving minority viewpoints.
 
-We evaluate \method on a structured recommendation benchmark constructed from Yelp Open Dataset, featuring 50 user requests across 10 complexity categories that vary by evidence type and logical structure.
+We evaluate \method on a structured recommendation benchmark constructed from Yelp Open Dataset, featuring 20 user requests across 4 complexity categories that vary by evidence type.
 We further test robustness against eight attack types, including prompt injection and fake reviews.
 Our contributions are:
 \begin{itemize}

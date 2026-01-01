@@ -11,8 +11,8 @@ We select restaurants from the Yelp Open Dataset using a multi-stage pipeline:
 We retain 20 restaurants meeting quality thresholds.
 
 \paragraph{Review Sampling.}
-For each restaurant, we construct a document set of 20 reviews.
-To capture diverse user sentiments, we stratify sampling by star rating, selecting exactly 4 reviews from each level (1--5 stars).
+For each restaurant, we construct a document set of up to 20 reviews.
+To capture diverse user sentiments, we stratify sampling by star rating, targeting 4 reviews from each level (1--5 stars) where available.
 Within each stratum, we select reviews by descending text length to maximize information density.
 All reviewer identifiers are anonymized.
 
