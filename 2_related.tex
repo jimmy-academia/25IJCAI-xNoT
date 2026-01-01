@@ -1,79 +1,29 @@
 \section{Related Work}
 
-We organize prior work along two axes: how methods handle input context (full-context vs.\ split-context) and their primary application domain (general reasoning vs.\ ranking).
+\subsection{Full-Context Prompting Methods}
 
-\subsection{Full-Context Prompt Schemes}
+Full-context methods process all information within a single LLM context window.
+Chain-of-Thought~\cite{wei2022chain} prompts LLMs to generate intermediate reasoning steps, while Self-Consistency~\cite{wang2022self} samples multiple paths and selects the most consistent answer.
+ReAct~\cite{yao2022react} interleaves reasoning with actions in a multi-turn loop; Plan-and-Solve~\cite{wang2023plan} generates explicit plans before execution; Self-Ask~\cite{press2022measuring} decomposes questions into sub-questions answered sequentially.
+Least-to-Most~\cite{zhou2022least} breaks problems into simpler subproblems solved incrementally.
+Despite their diversity, these methods share a fundamental limitation: they conflate evidence from different sources within a shared context, making them vulnerable to distraction from irrelevant content and adversarial manipulation.
 
-Full-context methods process all available information within a single LLM context window, regardless of the number of reasoning steps employed.
+\subsection{Split-Context Methods and Robustness}
 
-\paragraph{Chain-of-Thought (CoT).}
-Wei et al.~\cite{wei2022chain} demonstrated that prompting LLMs to generate intermediate reasoning steps improves performance on arithmetic and commonsense tasks.
-\emph{Self-Consistency}~\cite{wang2022self} extends this by sampling multiple reasoning paths and selecting the most consistent answer.
-While effective for homogeneous text, these methods struggle when relevant evidence is dispersed across structured, heterogeneous sources.
+Split-context methods isolate input segments, processing each separately before aggregation.
+Decomposed Prompting~\cite{khot2022decomposed} uses specialized sub-task handlers orchestrated by a decomposer, providing natural isolation between evidence sources.
+However, it employs static handlers without adapting to input content or detecting potential attacks.
 
-\paragraph{Agentic Reasoning.}
-ReAct~\cite{yao2022react} interleaves reasoning with actions (e.g., searching, retrieving) in a multi-turn loop, but still processes all retrieved information together.
-Plan-and-Solve~\cite{wang2023plan} generates explicit plans before execution, yet executes within a unified context.
-Self-Ask~\cite{press2022measuring} decomposes questions into sub-questions answered sequentially, but aggregates all answers in shared context for the final response.
+Real-world multi-source data is vulnerable to adversarial manipulation.
+Prompt injection embeds malicious instructions within user-provided content~\cite{perez2022ignore,greshake2023not}, while fake reviews and coordinated manipulation are endemic to online platforms~\cite{mukherjee2013yelp}.
+Defense prompts~\cite{jain2023baseline} add explicit warnings about potential attacks, but this approach requires distinguishing adversarial from genuine content at inference time.
 
-\paragraph{Decomposition Methods.}
-Least-to-Most prompting~\cite{zhou2022least} breaks complex problems into simpler subproblems solved incrementally.
-However, solutions to earlier subproblems remain in context, allowing errors or irrelevant information to propagate.
+Our work extends the split-context paradigm with adaptive planning that maps requirements to evidence sources, content-aware detection of heterogeneity and attacks before execution, and three-valued logic aggregation with explicit uncertainty handling.
 
-\paragraph{Limitations.}
-Full-context schemes share a fundamental vulnerability: when processing structured multi-source data, they conflate evidence from different sources within the same context window.
-This makes them susceptible to: (1) distraction from irrelevant content that happens to be salient; (2) confusion when evidence sources require different interpretation strategies; and (3) adversarial manipulation where malicious content in one source (e.g., a fake review) influences reasoning about others.
+\subsection{LLM-based Ranking}
 
-\subsection{Split-Context Prompt Schemes}
-
-Split-context methods divide input data into isolated segments, processing each separately before aggregation.
-
-\paragraph{Decomposed Prompting.}
-Khot et al.~\cite{khot2022decomposed} propose using specialized sub-task handlers orchestrated by a decomposer.
-Each handler focuses on a specific capability and operates on a subset of the input.
-This architectural choice provides natural isolation between evidence sources.
-
-\paragraph{Our Approach: ANoT.}
-We extend the split-context paradigm with three key innovations: (1) \emph{adaptive planning} that maps user requirements to evidence sources before execution; (2) \emph{content-aware adaptation} that detects and handles heterogeneity or attacks; and (3) \emph{explicit evidence tracking} using a structured script language that enables verification.
-
-\subsection{Ranking Methods}
-
-Recommendation and ranking represent a distinct application domain with specialized methods.
-
-\paragraph{Pairwise and Setwise Comparison.}
-Pairwise methods~\cite{qin2023large} compare candidates in pairs, aggregating wins into a ranking.
-Setwise approaches~\cite{sun2023chatgpt} compare small sets (3--5 items) with tournament-style elimination.
-These reduce the cognitive load per comparison but require $O(n^2)$ or $O(n \log n)$ LLM calls.
-
-\paragraph{Listwise Ranking.}
-RankGPT~\cite{sun2023chatgpt} uses sliding-window reranking, while direct listwise methods produce complete rankings in a single call.
-These are efficient but struggle when candidate descriptions are long or heterogeneous.
-
-\paragraph{Pointwise Scoring.}
-Fine-grained relevance scoring~\cite{liang2022holistic} rates each candidate independently on a scale, then ranks by score.
-This naturally supports split-context processing, as each candidate can be evaluated in isolation.
-
-\paragraph{Orthogonality to Context Handling.}
-Ranking strategies are orthogonal to context handling: pairwise methods can use either full-context (comparing two complete items) or split-context (extracting features separately, then comparing).
-Our experiments evaluate both reasoning-based and ranking-based methods to understand their interaction with context handling.
-
-\subsection{LLM Robustness and Adversarial Attacks}
-
-\paragraph{Prompt Injection.}
-Prompt injection attacks embed malicious instructions within user-provided content~\cite{perez2022ignore,greshake2023not}.
-In multi-source settings, reviews or metadata fields can contain hidden commands attempting to override model behavior.
-
-\paragraph{Data Poisoning.}
-Fake reviews and coordinated manipulation are endemic to online platforms~\cite{mukherjee2013yelp}.
-LLMs processing such data must distinguish genuine signals from adversarial noise.
-
-\paragraph{Defense Approaches.}
-Prior work on defense prompts~\cite{jain2023baseline} adds explicit warnings about potential attacks.
-However, our experiments reveal a surprising finding: defense prompts consistently \emph{hurt} performance on clean data, as models become overly conservative.
-This motivates our split-context approach, which achieves robustness through architectural isolation rather than explicit warnings.
-
-\subsection{Structured Text Understanding}
-
-Recent work has identified challenges in LLM reasoning over structured text formats.
-StrucText-Eval~\cite{zhou2024structext} benchmarks LLM performance on JSON, HTML, and other structured formats, finding significant degradation compared to plain text.
-Our work addresses a complementary challenge: reasoning over \emph{content} that is structured across multiple sources, rather than parsing structured \emph{syntax}.
+Ranking methods vary in how they compare candidates.
+Pairwise methods~\cite{qin2023large} compare candidates in pairs, requiring $O(n^2)$ calls; setwise approaches~\cite{sun2023chatgpt} use tournament-style elimination with $O(n \log n)$ calls.
+Listwise methods like RankGPT produce complete rankings in a single call but struggle with long or heterogeneous descriptions.
+Pointwise scoring~\cite{liang2022holistic} rates each candidate independently, naturally supporting split-context processing where each candidate is evaluated in isolation.
+Our evaluation includes both reasoning-based and ranking-based methods to understand their interaction with context handling.

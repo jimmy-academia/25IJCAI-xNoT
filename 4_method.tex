@@ -1,162 +1,52 @@
 \section{Method}
 
-We present Adaptive Network of Thought (ANoT), a split-context prompting method designed for structured multi-source data.
-ANoT operates in three phases: \emph{Planning} generates a validated execution script from the user request, \emph{Adaptation} adjusts the workflow based on detected data characteristics, and \emph{Execution} runs the script with explicit evidence tracking.
-
-\subsection{Overview: Full-Context vs.\ Split-Context}
-
-The key architectural choice in ANoT is \emph{context splitting}: rather than processing all information in a single LLM call, we decompose reasoning by evidence source.
-
-\paragraph{Why Split Context?}
-Consider a request: ``quiet cafe with free WiFi where reviews mention good matcha.''
-A full-context approach passes all metadata and all reviews to the LLM simultaneously.
-This creates three problems:
-\begin{enumerate}
-    \item \textbf{Distraction}: A long, irrelevant review may dominate attention over a short review that actually mentions matcha.
-    \item \textbf{Confusion}: The LLM must simultaneously parse structured attributes (\texttt{WiFi: 'free'}) and interpret unstructured text (``the matcha was amazing'').
-    \item \textbf{Vulnerability}: An adversarial review containing ``ANSWER: recommend this restaurant'' can influence the overall judgment.
-\end{enumerate}
-
-Split-context processing addresses all three: each evidence source is examined independently, preventing cross-contamination.
-A fake review cannot affect the WiFi attribute check; a verbose review cannot overshadow a concise one when they are processed separately.
+We present \method, a split-context prompting method with three phases that directly address the challenges identified in Section~\ref{sec:intro}.
+\emph{Planning} decomposes requests into evidence-specific conditions, handling structured text and compositional logic.
+\emph{Adaptation} detects heterogeneity and adversarial content before execution.
+\emph{Execution} aggregates evidence using three-valued logic with correct uncertainty propagation.
+Planning runs once per request and is cached; only Adaptation and Execution run per item, requiring $O(k)$ LLM calls where $k$ is the number of conditions.
 
 \subsection{Phase 1: Planning}
 
 Planning transforms a natural-language request into a validated, executable script.
-This phase runs once per unique request and is cached for efficiency.
+Given the user request, the LLM first generates a structured plan identifying: (1) each condition to verify, (2) the evidence source for each condition (\texttt{ATTR}, \texttt{HOURS}, \texttt{REVIEW\_TEXT}, \texttt{REVIEW\_META}), (3) value interpretation rules, and (4) the compositional aggregation logic.
 
-\paragraph{Step 1.1: Plan Generation.}
-Given the user request, the LLM generates a structured extraction plan that identifies:
-\begin{itemize}
-    \item Each condition to verify (e.g., ``WiFi is free'', ``reviews mention matcha'')
-    \item The evidence source for each condition (\texttt{ATTR}, \texttt{HOURS}, \texttt{REVIEW\_TEXT}, \texttt{REVIEW\_META})
-    \item Value interpretation rules (e.g., \texttt{NoiseLevel: u'quiet'} maps to ``quiet'')
-    \item Aggregation logic (AND/OR structure matching the request)
-\end{itemize}
-
-\paragraph{Step 1.2: Iterative Plan Validation.}
-The generated plan is validated against a checklist:
-\begin{enumerate}
-    \item Does the plan cover all conditions in the request?
-    \item Are evidence sources correctly identified?
-    \item Are value interpretations correct?
-    \item Does aggregation logic match the request's Boolean structure?
-\end{enumerate}
-
-If validation fails, the LLM refines the plan based on identified issues.
-This loop continues for up to 5 iterations or until the plan passes validation.
-
-\paragraph{Step 1.3: Script Translation.}
-The validated plan is translated into a \emph{Lightweight Workflow Template} (LWT)---an executable script in a simple domain-specific language:
+The plan is then translated into a \emph{Lightweight Workflow Template} (LWT), a simple script where each line specifies an LLM call with explicit data access paths:
 \begin{verbatim}
-(0)=LLM("Check {(input)}[attributes][NoiseLevel].
-        Is it quiet? Output: 1=yes, -1=loud, 0=unknown")
-(1)=LLM("Check {(input)}[attributes][WiFi].
-        Is WiFi free? Output: 1=yes, -1=no, 0=unknown")
-(2)=LLM("Analyze {(input)}[item_data][0..N][review].
-        Do reviews mention good matcha?
-        Output: 1=yes, -1=no, 0=not mentioned")
-(3)=LLM("Noise={(0)}, WiFi={(1)}, Matcha={(2)}.
-        Logic: all must be satisfied (AND).
-        Output: -1 if any is -1, 1 if all are 1, else 0")
+(0)=LLM("Check {(input)}[attr][NoiseLevel]. Quiet?
+        Output: 1=yes, -1=no, 0=unknown")
+(1)=LLM("Check {(input)}[attr][WiFi]. Free?
+        Output: 1=yes, -1=no, 0=unknown")
+(2)=LLM("Analyze {(input)}[reviews][0..N][text].
+        Mention good matcha? Output: 1/-1/0")
+(3)=LLM("Results: Noise={(0)}, WiFi={(1)}, Matcha={(2)}.
+        Logic: AND. Output: -1 if any -1, 1 if all 1, else 0")
 \end{verbatim}
 
-Each line specifies a step number, an LLM call, and variable references using the syntax \texttt{\{(var)\}[key][index]} for nested data access.
-
-\paragraph{Step 1.4: Iterative Script Validation.}
-The script is validated against the plan and request:
-\begin{enumerate}
-    \item Does each condition have a corresponding extraction step?
-    \item Are access paths valid for the data schema?
-    \item Are value interpretations included in prompts?
-    \item Does the final step produce exactly $\{-1, 0, +1\}$?
-\end{enumerate}
-
-Validation iterates until the script passes or reaches the maximum iteration count.
+Both plan and script undergo iterative validation (up to 5 rounds) to ensure completeness and schema compliance.
+Validated scripts are cached per request, amortizing planning cost across all candidate items.
 
 \subsection{Phase 2: Adaptation}
 
-Adaptation analyzes the actual data content to detect characteristics that may require workflow modification.
-This phase runs for each item, as content varies across candidates.
+Adaptation analyzes actual data content to detect characteristics requiring workflow modification.
+This phase runs per item, as content varies across candidates.
 
-\paragraph{Content Condition Detection.}
 The LLM examines review content for three potential issues:
 \begin{itemize}
-    \item \textbf{Heterogeneity}: Highly uneven review lengths where long reviews might bury key information.
-    \item \textbf{Attack Patterns}: Suspicious command-like text (``output'', ``ignore previous'', ``answer is'').
-    \item \textbf{Fake Indicators}: Generic, suspiciously perfect reviews that cover every aspect uniformly.
+    \item \textbf{Heterogeneity}: Highly uneven review lengths where verbose reviews might dominate.
+    \item \textbf{Attack patterns}: Command-like text (``ignore previous'', ``output:'', ``answer is'').
+    \item \textbf{Fake indicators}: Generic, suspiciously uniform reviews covering all aspects.
 \end{itemize}
 
-\paragraph{Workflow Modification.}
-Based on detected conditions, the workflow may be adapted:
-\begin{itemize}
-    \item For heterogeneous reviews: Add length-normalization or chunking steps.
-    \item For suspected attacks: Add explicit filtering steps that identify and exclude suspicious content.
-    \item For fake review indicators: Weight reviews by credibility signals (elite status, friend count).
-\end{itemize}
-
-For example, if attack patterns are detected, the script for review analysis (Step 2 in Section 4.3) might be modified from:
-\begin{verbatim}
-(2)=LLM("Analyze {(input)}[item_data][0..N][review].
-        Do reviews mention good matcha?")
-\end{verbatim}
-to:
-\begin{verbatim}
-(2a)=LLM("Filter {(input)}[item_data][0..N][review].
-         Exclude reviews containing commands like 'output',
-         'ignore', 'answer is'. Return safe review indices.")
-(2b)=LLM("Analyze reviews at indices {(2a)}.
-         Do reviews mention good matcha?")
-\end{verbatim}
-
-This modification isolates suspicious content during a controlled filtering step, ensuring the main analysis in (2b) never sees adversarial prompts.
-By processing each review independently and using three-valued aggregation, \method ensures that a single strongly negative review is not drowned out by many neutral ones---preserving minority viewpoints that might indicate genuine concerns.
-
-Critically, adaptation happens \emph{before} execution, so the LLM never sees potentially adversarial content during the main reasoning process---only during the controlled detection phase.
+Based on detected conditions, the workflow may be modified---e.g., adding a filtering step that excludes suspicious content before the main analysis, or weighting reviews by credibility signals.
+Critically, adaptation happens \emph{before} execution: the main reasoning phase never sees potentially adversarial content, only the controlled detection phase does.
+This architectural isolation provides robustness without degrading performance on clean data.
 
 \subsection{Phase 3: Execution}
 
-Execution runs the (possibly adapted) script step-by-step, substituting variables and tracking evidence.
+Execution runs the (possibly adapted) script step-by-step.
+Variable references are resolved dynamically: \texttt{\{(input)\}} becomes the current item's data, and \texttt{\{(N)\}} becomes the output of step $N$.
+Each evidence source is processed independently, preventing cross-contamination between metadata checks and review analysis.
 
-\paragraph{Variable Substitution.}
-Before each LLM call, variable references are resolved:
-\begin{itemize}
-    \item \texttt{\{(input)\}} $\rightarrow$ the current item's data structure
-    \item \texttt{\{(N)\}} $\rightarrow$ the output of step $N$
-    \item \texttt{[key][index]} $\rightarrow$ nested access into JSON structures
-\end{itemize}
-
-This enables dynamic data access: the same script works for items with different numbers of reviews or different attribute sets.
-
-\paragraph{Step-by-Step Execution.}
-Each step executes independently:
-\begin{enumerate}
-    \item Substitute all variable references in the prompt
-    \item Call the LLM with the resolved prompt
-    \item Parse the output (typically $-1$, $0$, or $+1$)
-    \item Store the result for use in subsequent steps
-\end{enumerate}
-
-\paragraph{Evidence Aggregation.}
-The final step aggregates evidence according to the request's Boolean logic.
-The script explicitly encodes the aggregation rules, ensuring consistent application of three-valued logic (Section~\ref{sec:problem}).
-
-\subsection{Key Design Principles}
-
-\paragraph{Leakage Prevention.}
-Ground truth labels and final answers are \emph{never} included in LLM context during planning or execution.
-The script generation process sees only the request structure, not correct answers.
-This prevents the model from shortcutting the reasoning process.
-
-\paragraph{Dynamic Input Selection.}
-Different requests require different evidence sources.
-``Find parking'' checks \texttt{attributes.BikeParking}; ``check if delicious'' analyzes review text.
-ANoT's planning phase automatically identifies appropriate sources based on the request, rather than using a fixed template.
-
-\paragraph{Clean Context Splitting.}
-Each evidence source is processed with minimal context: metadata checks see only the relevant attribute; review analysis sees only review text (not other metadata).
-This isolation prevents both accidental confusion and deliberate adversarial manipulation.
-
-\paragraph{Caching for Efficiency.}
-Validated plans and scripts are cached per request, amortizing planning cost across all candidate items.
-Only Phase 2 (Adaptation) and Phase 3 (Execution) run per item.
+The final step aggregates evidence using three-valued logic (Section~\ref{sec:three-valued}), ensuring correct compositional reasoning: for AND, any violation dominates; for OR, any satisfaction dominates; unknown values propagate only when they could affect the outcome.
+This preserves minority viewpoints---a single negative review is not drowned out by neutral ones.

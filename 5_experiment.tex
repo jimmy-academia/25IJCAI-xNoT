@@ -66,4 +66,19 @@ We compare against 13 zero-shot prompting methods spanning two categories:
 and \emph{ranking-based} methods designed specifically for item selection (Pointwise, PaRaDe, Pairwise, RankGPT, Setwise, Listwise).
 Details are provided in Appendix~\ref{app:baselines}.
 
+\paragraph{Ground truth generation.}
+For each (item, request) pair, we compute ground truth labels deterministically by evaluating leaf conditions against available evidence and aggregating via the request's Boolean structure.
+For \texttt{review\_text} conditions, we use LLM-based judgments with symmetric consensus voting: a review is labeled positive ($+1$) or negative ($-1$) only if at least 75\% of non-neutral judgments agree.
+Judgments are cached to ensure reproducibility.
+
+\paragraph{Adversarial evaluation.}
+To evaluate robustness, we apply attacks to review content $\mathbf{D}$ while preserving ground truth labels (computed from original, unattacked data).
+Attack types include:
+\begin{itemize}[nosep]
+    \item \textbf{Typo corruption}: Random character transpositions (10--20\% rate)
+    \item \textbf{Prompt injection}: Embedded commands (``IGNORE PREVIOUS INSTRUCTIONS...'')
+    \item \textbf{Fake reviews}: Synthetic reviews with extreme, generic sentiment
+    \item \textbf{Sarcastic manipulation}: Factually correct but misleadingly framed content
+\end{itemize}
+A robust method should maintain consistent performance across clean and attacked data.
 
