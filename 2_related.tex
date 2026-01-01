@@ -1,0 +1,29 @@
+\section{Related Works}
+% Many decision-support settings require aggregating large collections of user-generated text in to a single artifact, not to provide a single summary or locating the correct answer, but to provide faithful representation of the participating opinions. However, 
+
+
+% % 1 This phenomenon parallels the broader risk of "AI echo chambers," where generative models systematically amplify dominant narratives and reduce conceptual variation. See Messeri & Crockett (2024), "The Homogenizing Effect of Large Language Models on Human Expression and Thought," which argues that LLMs displace idiosyncratic forms of thought; and Besser et al. (2024), "Large Language Models Are Echo Chambers," (ACL 2024), which demonstrates LLMs' tendency to replicate user biases rather than correct them.
+
+% Option 2: The "Sycophancy" Footnote
+% % Use this if your paper focuses on adversarial steering or the model just "agreeing" with the prompt.
+
+% % 1 This vulnerability is exacerbated by "sycophancy"—the tendency of aligned models to prioritize user agreement over factual or distributional robustness. See Wei et al. (2024), "Simple Synthetic Data Reduces Sycophancy in Large Language Models" and Sharma et al. (2024), "Towards Understanding Sycophancy in Large Language Models," which detail how models collapse to the user's implicit view, creating a false consensus loop.
+
+% Title: Generative Echo Chamber? Effects of LLM-Powered Search Systems on Diverse Information Seeking
+
+
+% Trace provides a general mechanism to optimize code and prompts based on execution traces, but it treats all intermediate steps as generic graph nodes. It does not expose LLM-specific workflow concepts—such as planner/executor/verifier roles, early-exit strategies, or edge-vs-cloud decomposition—as first-class optimization targets. 
+
+% In contrast, out method explicitly tailor the optimizer to systematically introduce, reorganize, exploit multi-step LLM workflows, and reasoning about workflow structure. We further introduce cost and privacy objectives.
+
+
+% ADAS instantiates ADAS as Meta Agent Search: a black-box search in code space where a meta-agent iteratively proposes new agents, evaluates them on validation sets, and stores them in an archive. This design is powerful for discovering novel agent patterns but is inherently compute-intensive and sample-inefficient: each design update requires compiling a new agent and running full task-level evaluations, without reusing internal execution structure as a learning signal. 
+
+% By contrast, our method assumes a fixed task and a fixed program structure (e.g., a math solver or restaurant decision workflow) and performs trace-guided local updates to the internal LLM calls and control flow. We reuse the execution trace of each run to update the workflow directly, closer in spirit to gradient-based training on a supervised objective than to open-ended evolutionary search.
+
+% % https://chatgpt.com/g/g-p-69374957d8e08191827d3ab4ffe59de1-self-script-executaion-mode/c/6939dc6b-6158-832b-a503-95a53f38a120
+
+% A²Flow extends AFLOW’s Monte Carlo Tree Search (MCTS) framework for agentic workflow generation by introducing self-adaptive abstraction operators. Operators are first extracted from expert demonstrations via a three-stage pipeline—case-based operator generation, LLM-guided clustering, and deep refinement using long chain-of-thought and multi-path reasoning—and implemented as LLM-driven execution units (e.g., Planner(), Executor(), Validator()). Workflows are then optimized by AFLOW-style node-level search: the LLM-based optimizer expands workflows by inserting or modifying operators, and each candidate workflow is executed multiple times on a validation set to obtain task-level scores that drive MCTS updates. While this yields fully automated operators and strong performance, optimization remains search-based and module-level: operators are treated as black-box LLM calls, and improvement relies on repeated full-workflow evaluations. 
+
+% In contrast, we start from a single human-written Python workflow and perform trace-guided local edits to its internal LLM calls and control flow. Rather than searching over graphs of abstraction operators, our method directly uses the execution trace of each run to adapt the fine-grained workflow structure under a supervised objective (accuracy, cost, privacy), allowing the optimizer to modify both the overall structure and individual LLM invocations inside the program.
+

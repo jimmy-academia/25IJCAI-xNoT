@@ -1,0 +1,13 @@
+% (a) dropping users collapsing diversity, or (b) getting steered by bad inputs, and that (c) scales.
+
+\section{Introduction}
+In many decision-support scenarios, the goal of aggregating user-generated text is not merely to produce a single coherent narrative, but to represent the full \emph{distribution} of viewpoints in a population. With emergent abilities to interpret nuanced semantics across heterogeneous inputs, Large Language Models (LLMs) unlock a new possibility to capture this complexity at scale. However, prevailing LLM aggregation schemes rely on aggressive summarization to manage the scale, causing them to be structurally misaligned with the representation goal. By focusing on summarization over representation, these schemes sacrifice fidelity for compression, yielding pipelines that systematically erase minority viewpoints, and remain dangerously vulnerable to adversarial steering.
+
+This structural bias creates a dangerous blind spot for the decision-maker. In the pursuit of coherence, recursive summarization treats low-frequency signals as noise to be filtered rather than distinct perspectives to be preserved. Consequently, the final artifact hallucinates consensus where none exists. Simultaneously, because these systems lack explicit influence modeling, they cannot distinguish between organic agreement and artificial injection, allowing adversaries to hijack the narrative with minimal effort.
+
+In this work, we introduce \method, short for 
+\methodfull. \method's idea is to leverage minimal scaffolding that LLMs can autonomously expand. While current summarization schemes hard code the summarization protocol, \method enables LLMs to dynamically 
+
+by enabling it to infer both task decomposition and step coordination from simple examples. This allows step-length generalization, as LLM dynamically determines an appropriate number of elementary steps without requiring humans to redesign scripts for different problem sizes. As input complexity increases, \method enables LLMs to naturally expand its reasoning network with additional elementary steps to match the growing demands of the task.
+
+
