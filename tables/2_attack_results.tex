@@ -1,0 +1,30 @@
+% Attack Robustness Table - Performance under adversarial attacks
+\begin{table}[t]
+\centering
+\caption{Robustness under adversarial attacks. Hits@1 (\%) on clean vs.\ attacked data. $\Delta$ shows degradation (lower is better). Best robustness in \textbf{bold}.}
+\label{tab:attacks}
+\small
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}lccccc|c@{}}
+\toprule
+\textbf{Method} & \textbf{Clean} & \textbf{Typo} & \textbf{Inject} & \textbf{Fake} & \textbf{Sarc.} & \textbf{$\Delta$Avg} \\
+\midrule
+\multicolumn{7}{@{}l}{\textit{Reasoning-based}} \\
+Chain-of-Thought & \xx & \xx & \xx & \xx & \xx & \xx \\
+Self-Consistency & \xx & \xx & \xx & \xx & \xx & \xx \\
+ReAct & \xx & \xx & \xx & \xx & \xx & \xx \\
+Decomposed & \xx & \xx & \xx & \xx & \xx & \xx \\
+\midrule
+\multicolumn{7}{@{}l}{\textit{Ranking-based}} \\
+Pointwise & \xx & \xx & \xx & \xx & \xx & \xx \\
+Pairwise & \xx & \xx & \xx & \xx & \xx & \xx \\
+Listwise & \xx & \xx & \xx & \xx & \xx & \xx \\
+\midrule
+\textbf{ANoT (Ours)} & \textbf{\xx} & \textbf{\xx} & \textbf{\xx} & \textbf{\xx} & \textbf{\xx} & \textbf{\xx} \\
+\bottomrule
+\end{tabular}
+\vspace{1mm}
+
+{\footnotesize \textit{Note:} Typo = 10--20\% character corruption; Inject = prompt injection; Fake = synthetic reviews; Sarc. = sarcastic manipulation. $\Delta$Avg = average degradation from clean.}
+\vspace{-2mm}
+\end{table}

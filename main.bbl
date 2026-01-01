@@ -1,5 +1,15 @@
 \begin{thebibliography}{}
 
+\bibitem[\protect\citeauthoryear{Besta \bgroup \em et al.\egroup
+  }{2024}]{besta2024graph}
+Maciej Besta, Nils Blach, Ales Kubicek, Robert Gerstenberger, Michal
+  Podstawski, Lukas Gianinazzi, Joanna Gajda, Tomasz Lehmann, Hubert
+  Niewiadomski, Piotr Nyczyk, and Torsten Hoefler.
+\newblock Graph of thoughts: Solving elaborate problems with large language
+  models.
+\newblock {\em Proceedings of the AAAI Conference on Artificial Intelligence},
+  38(16):17682--17690, 2024.
+
 \bibitem[\protect\citeauthoryear{Cao \bgroup \em et al.\egroup
   }{2024}]{zhao2024struceval}
 Boxi Cao, Mengjie Ren, Hongyu Lin, Xianpei Han, Feng Zhang, Junfeng Zhan, and
@@ -47,6 +57,15 @@ Tushar Khot, Harsh Trivedi, Matthew Finlayson, Yao Fu, Kyle Richardson, Peter
 \newblock Decomposed prompting: A modular approach for solving complex tasks.
 \newblock {\em arXiv preprint arXiv:2210.02406}, 2022.
 
+\bibitem[\protect\citeauthoryear{Levy \bgroup \em et al.\egroup
+  }{2024}]{levy2024same}
+Mosh Levy, Alon Jacoby, and Yoav Goldberg.
+\newblock Same task, more tokens: The impact of input length on the reasoning
+  performance of large language models.
+\newblock In {\em Proceedings of the 62nd Annual Meeting of the Association for
+  Computational Linguistics (Volume 1: Long Papers)}. Association for
+  Computational Linguistics, 2024.
+
 \bibitem[\protect\citeauthoryear{Liang \bgroup \em et al.\egroup
   }{2023}]{liang2022holistic}
 Percy Liang, Rishi Bommasani, Tony Lee, Dimitris Tsipras, Dilara Soylu,
@@ -54,6 +73,14 @@ Percy Liang, Rishi Bommasani, Tony Lee, Dimitris Tsipras, Dilara Soylu,
   et~al.
 \newblock Holistic evaluation of language models.
 \newblock {\em Transactions on Machine Learning Research}, 2023.
+
+\bibitem[\protect\citeauthoryear{Liu \bgroup \em et al.\egroup
+  }{2024}]{liu2024lost}
+Nelson~F. Liu, Kevin Lin, John Hewitt, Ashwin Paranjape, Michele Bevilacqua,
+  Fabio Petroni, and Percy Liang.
+\newblock Lost in the middle: How language models use long contexts.
+\newblock In {\em Transactions of the Association for Computational
+  Linguistics}, volume~12, pages 157--173, 2024.
 
 \bibitem[\protect\citeauthoryear{Mukherjee \bgroup \em et al.\egroup
   }{2013}]{mukherjee2013yelp}
@@ -131,6 +158,15 @@ Shunyu Yao, Jeffrey Zhao, Dian Yu, Nan Du, Izhak Shafran, Karthik Narasimhan,
   and Yuan Cao.
 \newblock {ReAct}: Synergizing reasoning and acting in language models.
 \newblock In {\em International Conference on Learning Representations}, 2023.
+
+\bibitem[\protect\citeauthoryear{Yao \bgroup \em et al.\egroup
+  }{2024}]{yao2024tree}
+Shunyu Yao, Dian Yu, Jeffrey Zhao, Izhak Shafran, Thomas~L. Griffiths, Yuan
+  Cao, and Karthik Narasimhan.
+\newblock Tree of thoughts: Deliberate problem solving with large language
+  models.
+\newblock In {\em Advances in Neural Information Processing Systems},
+  volume~36, 2024.
 
 \bibitem[\protect\citeauthoryear{Zhou \bgroup \em et al.\egroup
   }{2023}]{zhou2022least}

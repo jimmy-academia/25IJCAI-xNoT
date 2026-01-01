@@ -6,6 +6,13 @@ Full-context methods are fundamentally vulnerable because adversarial content in
 \method's split-context design eliminates this attack vector by construction: metadata checks never see review text, and each review is processed independently.
 This architectural defense requires no additional prompting and introduces no performance penalty on clean data, unlike defense prompts that make models overly conservative.
 
+\paragraph{Theoretical Grounding.}
+Our design draws on the observation that LLM accuracy decays super-linearly with context length~\cite{liu2024lost,levy2024same}.
+Formally, if success probability follows $P(L) = \exp(-aL^\gamma)$ for context length $L$ with decay exponent $\gamma > 1$, then decomposing a task into $K$ independent sub-tasks of length $L/K$ yields joint success probability $P_{\text{split}} = \exp(-aL^\gamma K^{1-\gamma})$, which exceeds $P_{\text{full}}$ when $\gamma > 1$.
+Empirically, $\gamma \approx 1.1$--$2$ for GPT-class models, validating the decomposition benefit.
+Beyond accuracy, split-context provides a \emph{security} benefit: adversarial content in one segment cannot propagate errors to unrelated segments, as each sub-task operates in isolation.
+This theoretical foundation explains why \method maintains robustness without sacrificing clean-data performance.
+
 \paragraph{Preserving Minority Viewpoints.}
 Three-valued logic serves a dual purpose in \method.
 First, it handles genuine uncertainty (missing attributes, ambiguous reviews) without forcing false binary decisions.

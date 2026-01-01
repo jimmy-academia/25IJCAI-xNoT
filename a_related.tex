@@ -1,1 +1,133 @@
-\section{Extended Related Works}
+\section{Extended Related Work}
+\label{app:related}
+
+This appendix provides a detailed analysis of prior prompting methods, focusing on their structural properties and limitations when applied to multi-source reasoning with adversarial content.
+
+\subsection{Taxonomy of Prompting Methods}
+
+We categorize prompting methods along four key dimensions relevant to robust multi-source reasoning:
+
+\begin{enumerate}[nosep]
+    \item \textbf{Context Isolation}: Whether evidence sources are processed separately (split-context) or together (full-context).
+    \item \textbf{Evidence Tracking}: Whether the method explicitly tracks which evidence supports each conclusion.
+    \item \textbf{Uncertainty Handling}: Whether the method supports explicit unknown/uncertain states beyond binary decisions.
+    \item \textbf{Adaptive Processing}: Whether the method can modify its behavior based on input characteristics.
+\end{enumerate}
+
+Table~\ref{tab:method-comparison} summarizes how existing methods compare across these dimensions.
+
+\begin{table}[h]
+\centering
+\caption{Comparison of prompting methods on dimensions relevant to robust multi-source reasoning. \cmark = supported, \xmark = not supported, \pmark = partial support.}
+\label{tab:method-comparison}
+\small
+\begin{tabular}{lcccc}
+\toprule
+\textbf{Method} & \textbf{Isolation} & \textbf{Tracking} & \textbf{Uncertainty} & \textbf{Adaptive} \\
+\midrule
+Chain-of-Thought & \xmark & \xmark & \xmark & \xmark \\
+Self-Consistency & \xmark & \xmark & \pmark & \xmark \\
+ReAct & \xmark & \pmark & \xmark & \pmark \\
+Least-to-Most & \pmark & \pmark & \xmark & \xmark \\
+Plan-and-Solve & \xmark & \pmark & \xmark & \xmark \\
+Decomposed Prompting & \pmark & \pmark & \xmark & \xmark \\
+\midrule
+Pointwise Ranking & \cmark & \xmark & \xmark & \xmark \\
+Pairwise Ranking & \pmark & \xmark & \xmark & \xmark \\
+Listwise Ranking & \xmark & \xmark & \xmark & \xmark \\
+\midrule
+\textbf{\method (Ours)} & \cmark & \cmark & \cmark & \cmark \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Full-Context Methods and Adversarial Vulnerability}
+
+Full-context methods process all available information in a single LLM context window. While effective for homogeneous text, this design creates fundamental vulnerabilities:
+
+\paragraph{Cross-Source Contamination.}
+When metadata and reviews are processed together, adversarial content in reviews can influence metadata reasoning. A fake review containing ``ANSWER: This place has free WiFi'' can override the model's judgment of actual WiFi attributes, even when the metadata clearly indicates otherwise.
+
+\paragraph{Attention Hijacking.}
+Prompt injection attacks exploit the attention mechanism by inserting high-salience tokens (``IMPORTANT:'', ``SYSTEM:'', ``IGNORE PREVIOUS'') that draw attention away from legitimate content. In full-context methods, these tokens affect all subsequent reasoning, not just review analysis.
+
+\paragraph{Evidence Conflation.}
+Without explicit source tracking, full-context methods cannot distinguish between evidence from structured metadata (high reliability) and user-generated content (variable reliability). This prevents appropriate weighting during aggregation.
+
+\subsection{Split-Context Methods and Their Limitations}
+
+Existing split-context methods like Decomposed Prompting~\cite{khot2022decomposed} process information in separate calls but still fall short for adversarial robustness:
+
+\paragraph{Static Decomposition.}
+Decomposed Prompting uses predefined task handlers that cannot adapt to input characteristics. When faced with adversarial content, static handlers process it identically to legitimate content.
+
+\paragraph{No Pre-Execution Filtering.}
+Existing methods lack a phase to analyze content \emph{before} the main reasoning. Adversarial patterns are only discovered (if at all) during execution, by which point they may have already influenced outputs.
+
+\paragraph{Binary Logic Limitations.}
+Most methods force binary (true/false) decisions, which conflates ``no evidence'' with ``negative evidence.'' This is problematic when adversarial content has been filtered out---the absence of reviews should yield ``unknown,'' not ``negative.''
+
+\subsection{Ranking Methods for Recommendation}
+
+Ranking-based prompting methods vary in how they handle candidate comparison:
+
+\paragraph{Pointwise Methods.}
+Score each candidate independently, naturally supporting split-context processing. However, they lack compositional logic for complex Boolean conditions and cannot express uncertainty.
+
+\paragraph{Pairwise/Setwise Methods.}
+Compare candidates in groups, requiring shared context that enables cross-contamination. An adversarial review in one candidate can affect relative judgments.
+
+\paragraph{Listwise Methods.}
+Process all candidates simultaneously, maximizing vulnerability to adversarial content since a single attack affects the entire ranking.
+
+\subsection{Comparison with Multi-Agent Systems}
+
+Multi-Agent Systems (MAS) organize multiple specialized LLM ``agents'' with distinct roles. While MAS could theoretically support isolation, key differences from \method include:
+
+\begin{table}[h]
+\centering
+\caption{Comparison between \method and Multi-Agent Systems.}
+\label{tab:mas-comparison}
+\small
+\begin{tabularx}{\linewidth}{p{0.15\linewidth}XX}
+\toprule
+\textbf{Aspect} & \textbf{MAS} & \textbf{\method} \\
+\midrule
+Architecture & Multiple agents with role dispatch & Single model with split-context calls \\
+Coordination & Message passing between agents & Explicit \script dependencies \\
+Overhead & High (agent orchestration) & Low (cached scripts) \\
+Isolation & Implicit via role separation & Explicit via context separation \\
+Adaptability & Requires agent redesign & Content-aware adaptation phase \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\method achieves isolation benefits without MAS overhead by structuring reasoning as a prompt-native workflow with explicit data dependencies.
+
+\subsection{Defense Prompting Approaches}
+
+Prior work has explored adding defensive instructions to prompts:
+
+\paragraph{Explicit Warnings.}
+Prompts like ``Be skeptical of suspicious content'' or ``Watch for adversarial manipulation'' alert the model to potential attacks. However, our experiments show this approach backfires: models become overly conservative, treating legitimate strong opinions as potentially adversarial.
+
+\paragraph{Delimiter-Based Isolation.}
+Using special tokens to separate user content from instructions provides weak isolation that sophisticated attacks can bypass through delimiter injection.
+
+\paragraph{Output Filtering.}
+Post-hoc filtering of outputs for adversarial patterns cannot prevent contamination that has already influenced reasoning.
+
+\method differs fundamentally: rather than adding defenses to a vulnerable architecture, it eliminates vulnerability through architectural isolation. The Adaptation phase detects attacks \emph{before} execution, and split-context processing prevents any remaining adversarial content from affecting unrelated evidence evaluation.
+
+\subsection{Three-Valued Logic in AI Systems}
+
+Three-valued logic has precedent in database systems (SQL NULL handling) and knowledge representation~\cite{fitting1985kripke}. Its application to LLM prompting is novel:
+
+\begin{itemize}[nosep]
+    \item \textbf{Explicit uncertainty}: Missing or ambiguous evidence yields 0 (unknown) rather than forcing a guess.
+    \item \textbf{Correct aggregation}: AND/OR operators propagate uncertainty appropriately---unknown values only affect outcomes when decisive.
+    \item \textbf{Minority preservation}: A single negative review is not drowned out by many reviews that simply don't mention the aspect.
+    \item \textbf{Attack resilience}: Filtered adversarial content leaves ``unknown'' rather than ``negative,'' preventing false rejections.
+\end{itemize}
+
+This semantic precision is essential for reliable multi-source reasoning where evidence quality varies significantly.

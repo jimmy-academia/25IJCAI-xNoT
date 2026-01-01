@@ -1,1 +1,196 @@
-\section{method detail}
+\section{\method Design Details}
+\label{app:method_details}
+
+This appendix provides detailed prompt templates and examples for each phase of \method. We present the \scriptfull (\script) format specification, followed by concrete examples from our recommendation benchmark.
+
+\subsection{\scriptfull Format}
+\label{app:lwt_format}
+
+The \script format enables split-context execution by defining a sequence of independent LLM calls with explicit data dependencies. Each instruction follows this notation:
+
+\begin{itemize}[nosep]
+    \item \texttt{(N)=LLM("...")} marks the N\textsuperscript{th} instruction.
+    \item \texttt{\{(input)\}} references the current item's data.
+    \item \texttt{\{(N)\}} references the output of instruction N.
+    \item \texttt{\{(input)\}[path]} accesses nested data (e.g., \texttt{[attr][WiFi]}).
+\end{itemize}
+
+This format ensures each evidence source is processed in isolation, preventing cross-contamination between metadata and review analysis.
+
+\subsection{Phase 1: Planning Prompts}
+
+Planning transforms a natural-language request into a validated \script script. The process uses two prompts: plan generation and script compilation.
+
+\paragraph{Plan Generation Prompt.}
+Given a user request, the LLM generates a structured decomposition:
+
+\begin{quote}
+\small\ttfamily
+Given the following user request:\\
+Request: \{user\_request\}\\
+\\
+Decompose this request into verifiable conditions. For each condition, specify:\\
+1. The aspect to check (e.g., "noise level", "WiFi availability")\\
+2. The evidence source: ATTR (item metadata), HOURS (operating hours), REVIEW\_TEXT (review content), or REVIEW\_META (reviewer signals)\\
+3. The expected value or criterion\\
+4. How to interpret missing/ambiguous evidence\\
+\\
+Output a structured plan with clear dependencies.
+\end{quote}
+
+\paragraph{Example Plan Output.}
+For the request ``quiet cafe with free WiFi where reviews mention good matcha'':
+
+\begin{quote}
+\small\ttfamily
+Condition 1: NoiseLevel = quiet\\
+\ \ Source: ATTR\\
+\ \ Check: attributes.NoiseLevel in ["quiet", "average"]\\
+\\
+Condition 2: WiFi = free\\
+\ \ Source: ATTR\\
+\ \ Check: attributes.WiFi == "free"\\
+\\
+Condition 3: Matcha quality = positive\\
+\ \ Source: REVIEW\_TEXT\\
+\ \ Check: Reviews mention matcha positively\\
+\\
+Aggregation: AND(Condition1, Condition2, Condition3)
+\end{quote}
+
+\paragraph{Script Compilation Prompt.}
+The plan is compiled into an executable \script script:
+
+\begin{quote}
+\small\ttfamily
+Convert the following plan into a \script-formatted script.\\
+\\
+Plan: \{plan\_output\}\\
+\\
+Rules:\\
+- Use (N)=LLM("...") for each instruction\\
+- Reference input data with \{(input)\}[path]\\
+- Each instruction outputs: 1 (satisfied), -1 (violated), 0 (unknown)\\
+- Final instruction aggregates using: AND = min, OR = max\\
+\\
+Output only the script.
+\end{quote}
+
+\paragraph{Example \script Script.}
+\begin{quote}
+\small\ttfamily
+(0)=LLM("Check \{(input)\}[attr][NoiseLevel].\\
+\ \ \ \ Is it quiet or average? Output: 1=yes, -1=no, 0=unknown")\\
+(1)=LLM("Check \{(input)\}[attr][WiFi].\\
+\ \ \ \ Is it free? Output: 1=yes, -1=no, 0=unknown")\\
+(2)=LLM("Analyze \{(input)\}[reviews][0..N][text].\\
+\ \ \ \ Do reviews mention good matcha? Output: 1=yes, -1=no, 0=unclear")\\
+(3)=LLM("Aggregate: Noise=\{(0)\}, WiFi=\{(1)\}, Matcha=\{(2)\}.\\
+\ \ \ \ Logic: AND. Output: -1 if any -1, 1 if all 1, else 0")
+\end{quote}
+
+\subsection{Phase 2: Adaptation Prompts}
+
+Adaptation analyzes content characteristics before execution to detect potential issues.
+
+\paragraph{Content Analysis Prompt.}
+\begin{quote}
+\small\ttfamily
+Analyze the following reviews for potential issues:\\
+Reviews: \{(input)\}[reviews]\\
+\\
+Check for:\\
+1. HETEROGENEITY: Are review lengths highly uneven? (Some very long, others very short)\\
+2. ATTACK\_PATTERNS: Any command-like text? ("ignore previous", "output:", "answer is", "IMPORTANT:")\\
+3. FAKE\_INDICATORS: Generic phrases covering all aspects? Suspiciously uniform structure?\\
+\\
+Output: \{heterogeneity: bool, attacks: list[int], fake: list[int]\}
+\end{quote}
+
+\paragraph{Workflow Modification.}
+Based on detected issues, the adaptation phase may modify the execution script:
+
+\begin{itemize}[nosep]
+    \item If attacks detected: Add filtering step to exclude suspicious reviews
+    \item If heterogeneity detected: Apply length normalization or weighting
+    \item If fake indicators: Down-weight affected reviews in aggregation
+\end{itemize}
+
+\subsection{Phase 3: Execution Details}
+
+Execution runs the (possibly adapted) script step-by-step with variable substitution.
+
+\paragraph{Variable Resolution.}
+At each step, placeholders are resolved:
+\begin{itemize}[nosep]
+    \item \texttt{\{(input)\}} $\rightarrow$ Current item's full data structure
+    \item \texttt{\{(N)\}} $\rightarrow$ Cached output of instruction N
+    \item \texttt{\{(input)\}[reviews][i]} $\rightarrow$ The i\textsuperscript{th} review's data
+\end{itemize}
+
+\paragraph{Three-Valued Aggregation.}
+The final aggregation step uses three-valued logic:
+\begin{align}
+    a \land b &= \min(a, b) \\
+    a \lor b &= \max(a, b)
+\end{align}
+where $+1$ = satisfied, $0$ = unknown, $-1$ = violated.
+
+\subsection{Full Example: Recommendation Query}
+
+We present a complete example for the query: ``Budget-friendly cafe with good atmosphere, open Monday afternoon, where elite reviewers gave positive ratings.''
+
+\paragraph{Generated Plan.}
+\begin{quote}
+\small\ttfamily
+C1: PriceRange $\leq$ 2 [Source: ATTR]\\
+C2: Ambiance = positive [Source: REVIEW\_TEXT]\\
+C3: Open Monday 12:00-17:00 [Source: HOURS]\\
+C4: Elite reviewer ratings $\geq$ 4 [Source: REVIEW\_META]\\
+Aggregation: AND(C1, C2, C3, C4)
+\end{quote}
+
+\paragraph{Compiled \script Script.}
+\begin{quote}
+\small\ttfamily
+(0)=LLM("Check \{(input)\}[attr][RestaurantsPriceRange2].\\
+\ \ \ \ Value $\leq$ 2? Output: 1/0/-1")\\
+(1)=LLM("Analyze atmosphere mentions in \{(input)\}[reviews][*][text].\\
+\ \ \ \ Overall positive? Output: 1/0/-1")\\
+(2)=LLM("Check \{(input)\}[hours][Monday].\\
+\ \ \ \ Contains 12:00-17:00? Output: 1/0/-1")\\
+(3)=LLM("Filter \{(input)\}[reviews] where user.elite=true.\\
+\ \ \ \ Average stars $\geq$ 4? Output: 1/0/-1")\\
+(4)=LLM("Results: [\{(0)\}, \{(1)\}, \{(2)\}, \{(3)\}].\\
+\ \ \ \ AND aggregation. Output final score.")
+\end{quote}
+
+\paragraph{Adaptation Output (if attacks detected).}
+\begin{quote}
+\small\ttfamily
+Detected: Attack patterns in reviews [3, 7]\\
+Modification: Exclude reviews [3, 7] from steps (1), (3)
+\end{quote}
+
+\paragraph{Execution Trace.}
+\begin{quote}
+\small\ttfamily
+Step 0: PriceRange=2 $\rightarrow$ 1 (satisfied)\\
+Step 1: Reviews mention "cozy", "nice vibe" $\rightarrow$ 1\\
+Step 2: Hours "11:00-20:00" contains window $\rightarrow$ 1\\
+Step 3: Elite avg=4.2 $\rightarrow$ 1\\
+Step 4: AND(1,1,1,1) = min = 1\\
+Final: $\sigma(I, R) = +1$ (recommend)
+\end{quote}
+
+\subsection{Script Caching Strategy}
+
+Validated \script scripts are cached per request to amortize planning cost:
+\begin{itemize}[nosep]
+    \item Planning runs once when a new request type is encountered
+    \item The compiled script is stored with a hash of the request structure
+    \item Subsequent items with the same request reuse the cached script
+    \item Only Adaptation and Execution run per-item ($O(k)$ calls for $k$ conditions)
+\end{itemize}
+
+This caching reduces total LLM calls from $O(n \cdot k)$ to $O(1 + n \cdot k)$ where the planning overhead is amortized across $n$ candidate items.

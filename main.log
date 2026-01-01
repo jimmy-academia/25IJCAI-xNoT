@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2025) (preloaded format=pdflatex 2025.5.14)  31 DEC 2025 23:47
+This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2025) (preloaded format=pdflatex 2025.5.14)  1 JAN 2026 00:20
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -858,7 +858,22 @@ File: tikzlibrarybackgrounds.code.tex 2023-01-15 v3.1.10 (3.1.10)
 (/usr/local/texlive/2025basic/texmf-dist/tex/generic/pgf/frontendlayer/tikz/lib
 raries/tikzlibrarycalc.code.tex
 File: tikzlibrarycalc.code.tex 2023-01-15 v3.1.10 (3.1.10)
-)) (./_commands.tex) (./_latex/_info_setting.tex
+)) (./_commands.tex
+(/usr/local/texlive/2025basic/texmf-dist/tex/latex/psnfss/pifont.sty
+Package: pifont 2020/03/25 PSNFSS-v9.3 Pi font support (SPQR) 
+LaTeX Font Info:    Trying to load font information for U+pzd on input line 63.
+
+
+(/usr/local/texlive/2025basic/texmf-dist/tex/latex/psnfss/upzd.fd
+File: upzd.fd 2001/06/04 font definitions for U/pzd.
+)
+LaTeX Font Info:    Trying to load font information for U+psy on input line 64.
+
+
+(/usr/local/texlive/2025basic/texmf-dist/tex/latex/psnfss/upsy.fd
+File: upsy.fd 2001/06/04 font definitions for U/psy.
+)))
+(./_latex/_info_setting.tex
 \c@example=\count342
 \c@theorem=\count343
 ) (./_latex/_author.tex)
@@ -1027,9 +1042,21 @@ LaTeX Font Info:    Trying to load font information for OT1+pcr on input line 1
 (/usr/local/texlive/2025basic/texmf-dist/tex/latex/psnfss/ot1pcr.fd
 File: ot1pcr.fd 2001/06/04 font definitions for OT1/pcr.
 )
+Underfull \hbox (badness 2894) in paragraph at lines 19--20
+\OT1/ptm/m/n/10 iso-lat-ing a sin-gle ev-i-dence type: G01 (\OT1/pcr/m/n/10 ite
+m[]meta\OT1/ptm/m/n/10 ),
+ []
 
 
-Underfull \hbox (badness 3679) in paragraph at lines 33--35
+Underfull \hbox (badness 10000) in paragraph at lines 19--20
+\OT1/ptm/m/n/10 G02 (\OT1/pcr/m/n/10 review[]text\OT1/ptm/m/n/10 ), G03 (\OT1/p
+cr/m/n/10 item[]hours\OT1/ptm/m/n/10 ), G04
+ []
+
+
+
+
+Underfull \hbox (badness 3679) in paragraph at lines 34--36
 \OT1/ptm/m/n/10 Each re-quest has ex-actly one ground-truth item with
  []
 
@@ -1090,68 +1117,523 @@ LaTeX Font Info:    Font shape `OMS/pcr/m/n' in size <10> not available
 (Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 50.
 )
 (./5_experiment.tex
+Underfull \hbox (badness 1675) in paragraph at lines 4--6
+ []\OT1/ptm/b/n/10 Data.[] \OT1/ptm/m/n/10 We sam-ple 20 restau-rants from the 
+Yelp Open
+ []
 
 
+
+
+Underfull \hbox (badness 2401) in paragraph at lines 8--12
+\OT1/ptm/m/n/10 meth-ods: \OT1/ptm/m/it/10 reasoning-based \OT1/ptm/m/n/10 (CoT
+, Self-Consistency, Re-
+ []
+
+(./tables/1_main_results.tex)
+Underfull \hbox (badness 10000) in paragraph at lines 32--37
+ []\OT1/ptm/b/n/10 Per-group anal-y-sis.[] \OT1/ptm/m/n/10 Per-for-mance varies
+ sig-nif-i-cantly
+ []
+
+
+Underfull \hbox (badness 2229) in paragraph at lines 32--37
+\OT1/ptm/m/n/10 con-flate sig-nals, while ANoT eval-u-ates each con-di-tion
+ []
+
+(./tables/2_attack_results.tex)
 
 [3]
-Underfull \hbox (badness 2229) in paragraph at lines 44--48
-\OT1/ptm/m/it/10 based \OT1/ptm/m/n/10 meth-ods de-signed specif-i-cally for it
-em se-lec-tion
+Underfull \hbox (badness 2653) in paragraph at lines 47--50
+ []\OT1/ptm/b/n/10 Defense anal-y-sis.[] \OT1/ptm/m/n/10 In-jec-tion at-tacks a
+re most ef-fec-tive
  []
 
 
-Underfull \hbox (badness 1132) in paragraph at lines 58--59
-[]\OT1/ptm/b/n/10 Typo cor-rup-tion\OT1/ptm/m/n/10 : Ran-dom char-ac-ter trans-
-po-si-tions
- []
 
 ) (./6_discussion.tex
-Underfull \hbox (badness 7869) in paragraph at lines 10--15
+
+[4]
+Underfull \hbox (badness 7869) in paragraph at lines 17--22
  []\OT1/ptm/b/n/10 Preserving Mi-nor-ity View-points.[] \OT1/ptm/m/n/10 Three-v
 alued logic
  []
 
-
-
 ) (./7_conclusion.tex
-Underfull \hbox (badness 10000) in paragraph at lines 23--1
+Underfull \hbox (badness 10000) in paragraph at lines 30--1
  []\OT1/ptm/b/n/10 Counter-Intuitive Find-ing.[] \OT1/ptm/m/n/10 Adding ex-plic
 it de-fense
  []
 
-) (./main.bbl
 
-[4]
-Underfull \hbox (badness 5077) in paragraph at lines 19--25
+
+) (./main.bbl
+Underfull \hbox (badness 1721) in paragraph at lines 5--12
+[]\OT1/ptm/m/n/10 Maciej Besta, Nils Blach, Ales Ku-
+ []
+
+
+Underfull \hbox (badness 1418) in paragraph at lines 5--12
+\OT1/ptm/m/n/10 Gi-an-i-nazzi, Joanna Gajda, Tomasz Lehmann, Hu-bert
+ []
+
+
+Underfull \hbox (badness 5077) in paragraph at lines 29--35
 []\OT1/ptm/m/n/10 Kai Gre-shake, Sa-har Ab-delnabi,
  []
 
 
-Underfull \hbox (badness 2469) in paragraph at lines 28--33
+Underfull \hbox (badness 2469) in paragraph at lines 38--43
 []\OT1/ptm/m/n/10 Zhouhong Gu, Haon-ing Ye, Xingzhou
  []
 
 
-Underfull \hbox (badness 1490) in paragraph at lines 28--33
+Underfull \hbox (badness 1490) in paragraph at lines 38--43
 \OT1/ptm/m/n/10 son-ing abil-ity in structure-rich text.  \OT1/ptm/m/it/10 arXi
 v preprint
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 60--64
+
+[5]
+Underfull \hbox (badness 10000) in paragraph at lines 87--91
 []\OT1/ptm/m/n/10 Arjun Mukher-jee, Vivek
  []
 
 
-
-
-Underfull \hbox (badness 1117) in paragraph at lines 95--102
+Underfull \hbox (badness 1117) in paragraph at lines 122--129
 []\OT1/ptm/m/n/10 Lei Wang, Wanyu Xu, Yi-huai Lan,
  []
 
-) (./a_related.tex) (./b_method.tex) (./c_experiment.tex
 
-[5]
+
+) (./a_related.tex
+Underfull \hbox (badness 2142) in paragraph at lines 11--12
+[]\OT1/ptm/b/n/10 Context Iso-la-tion\OT1/ptm/m/n/10 : Whether ev-i-dence sourc
+es are
+ []
+
+
+
+[6]
+Overfull \hbox (52.48932pt too wide) in paragraph at lines 24--42
+ [][] 
+ []
+
+
+Underfull \hbox (badness 1436) in paragraph at lines 49--50
+ []\OT1/ptm/b/n/10 Cross-Source Con-tam-i-na-tion.[] \OT1/ptm/m/n/10 When meta-
+data and re-
+ []
+
+
+Underfull \hbox (badness 1242) in paragraph at lines 55--56
+ []\OT1/ptm/b/n/10 Evidence Con-fla-tion.[] \OT1/ptm/m/n/10 With-out ex-plicit 
+source track-ing,
+ []
+
+
+Underfull \hbox (badness 1275) in paragraph at lines 55--56
+\OT1/ptm/m/n/10 con-tent (vari-able re-li-a-bil-ity). This pre-vents ap-pro-pri
+-ate
+ []
+
+
+Underfull \hbox (badness 1997) in paragraph at lines 65--66
+ []\OT1/ptm/b/n/10 No Pre-Execution Fil-ter-ing.[] \OT1/ptm/m/n/10 Ex-ist-ing m
+eth-ods lack a
+ []
+
+
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 78--79
+ []\OT1/ptm/b/n/10 Pairwise/Setwise Meth-ods.[] \OT1/ptm/m/n/10 Com-pare can-di
+-dates in
+ []
+
+
+Underfull \hbox (badness 6792) in paragraph at lines 78--79
+\OT1/ptm/m/n/10 groups, re-quir-ing shared con-text that en-ables cross-
+ []
+
+
+Overfull \hbox (8.3962pt too wide) in paragraph at lines 102--102
+[]|\OT1/ptm/m/n/9 Architecture| 
+ []
+
+
+Underfull \hbox (badness 7047) in paragraph at lines 102--102
+[]|\OT1/ptm/m/n/9 Multiple agents with
+ []
+
+
+Overfull \hbox (10.91637pt too wide) in paragraph at lines 102--102
+[]|\OT1/ptm/m/n/9 Coordination| 
+ []
+
+
+Underfull \hbox (badness 7081) in paragraph at lines 102--102
+[]|\OT1/ptm/m/n/9 Message pass-ing be-
+ []
+
+
+Underfull \hbox (badness 4144) in paragraph at lines 102--102
+[]|\OT1/ptm/m/n/9 Explicit LWT de-pen-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 102--102
+[]|\OT1/ptm/m/n/9 Explicit via con-text
+ []
+
+
+Overfull \hbox (8.4142pt too wide) in paragraph at lines 102--102
+[]|\OT1/ptm/m/n/9 Adaptability| 
+ []
+
+
+Underfull \hbox (badness 2941) in paragraph at lines 102--102
+[]|\OT1/ptm/m/n/9 Content-aware adap-ta-
+ []
+
+
+
+[7]
+Underfull \hbox (badness 1484) in paragraph at lines 120--121
+[]\OT1/ptm/m/n/10 ANoT dif-fers fun-da-men-tally: rather than adding de-
+ []
+
+
+Underfull \hbox (badness 1675) in paragraph at lines 124--125
+\OT1/ptm/m/n/10 NULL han-dling) and knowl-edge rep-re-sen-ta-tion [] []Fit-ting
+,
+ []
+
+) (./b_method.tex
+Underfull \hbox (badness 10000) in paragraph at lines 15--16
+[]\OMS/cmsy/m/n/10 f\OT1/pcr/m/n/10 (input)\OMS/cmsy/m/n/10 g\OT1/pcr/m/n/10 [p
+ath] \OT1/ptm/m/n/10 ac-cesses nested data (e.g.,
+ []
+
+LaTeX Font Info:    Font shape `OMS/pcr/m/n' in size <9> not available
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 30.
+
+Underfull \hbox (badness 10000) in paragraph at lines 29--39
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 29--39
+\OT1/pcr/m/n/9 Decompose this request into
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 29--39
+\OT1/pcr/m/n/9 verifiable conditions. For each
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 29--39
+\OT1/pcr/m/n/9 1. The aspect to check (e.g., "noise
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 29--39
+\OT1/pcr/m/n/9 2. The evidence source: ATTR (item
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 29--39
+\OT1/pcr/m/n/9 metadata), HOURS (operating hours),
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 29--39
+\OT1/pcr/m/n/9 REVIEW[]TEXT (review content), or
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 29--39
+\OT1/pcr/m/n/9 4. How to interpret
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 29--39
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 29--39
+\OT1/pcr/m/n/9 Output a structured plan with clear
+ []
+
+
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 46--59
+\OT1/pcr/m/n/9 Check: attributes.NoiseLevel in
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 46--59
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 46--59
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 46--59
+\OT1/pcr/m/n/9 Condition 3: Matcha quality =
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 46--59
+\OT1/pcr/m/n/9 Check: Reviews mention matcha
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 46--59
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 46--59
+\OT1/pcr/m/n/9 Aggregation: AND(Condition1,
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 66--77
+[]\OT1/pcr/m/n/9 Convert the following plan into a
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 66--77
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 66--77
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 66--77
+\OT1/pcr/m/n/9 - Use (N)=LLM("...") for each
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 66--77
+\OT1/pcr/m/n/9 - Reference input data with
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 66--77
+\OT1/pcr/m/n/9 - Each instruction outputs: 1
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 66--77
+\OT1/pcr/m/n/9 (satisfied), -1 (violated), 0
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 66--77
+\OT1/pcr/m/n/9 - Final instruction aggregates using:
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 66--77
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 82--90
+[]\OT1/pcr/m/n/9 (0)=LLM("Check
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 82--90
+\OT1/pcr/m/n/9 Is it quiet or average? Output:
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 82--90
+\OT1/pcr/m/n/9 Is it free? Output: 1=yes, -1=no,
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 82--90
+\OT1/pcr/m/n/9 (2)=LLM("Analyze
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 82--90
+\OT1/pcr/m/n/9 Do reviews mention good matcha?
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 82--90
+\OT1/pcr/m/n/9 (3)=LLM("Aggregate: Noise=\OMS/cmsy/m/n/9 f\OT1/pcr/m/n/9 (0)\OM
+S/cmsy/m/n/9 g\OT1/pcr/m/n/9 ,
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 82--90
+\OT1/pcr/m/n/9 Logic: AND. Output: -1 if any -1, 1
+ []
+
+
+
+[8]
+Underfull \hbox (badness 10000) in paragraph at lines 99--108
+[]\OT1/pcr/m/n/9 Analyze the following reviews for
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 99--108
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 99--108
+\OT1/pcr/m/n/9 1. HETEROGENEITY: Are review lengths
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 99--108
+\OT1/pcr/m/n/9 highly uneven? (Some very long,
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 99--108
+\OT1/pcr/m/n/9 2. ATTACK[]PATTERNS: Any command-like
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 99--108
+\OT1/pcr/m/n/9 text? ("ignore previous", "output:",
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 99--108
+\OT1/pcr/m/n/9 3. FAKE[]INDICATORS: Generic phrases
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 99--108
+\OT1/pcr/m/n/9 covering all aspects? Suspiciously
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 99--108
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 99--108
+\OT1/pcr/m/n/9 Output: \OMS/cmsy/m/n/9 f\OT1/pcr/m/n/9 heterogeneity: bool,
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 99--108
+\OT1/pcr/m/n/9 attacks: list[int], fake:
+ []
+
+
+Underfull \hbox (badness 1275) in paragraph at lines 132--133
+ []\OT1/ptm/b/n/10 Three-Valued Ag-gre-ga-tion.[] \OT1/ptm/m/n/10 The fi-nal ag
+-gre-ga-tion step
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 146--151
+\OT1/pcr/m/n/9 C2: Ambiance = positive [Source:
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 146--151
+\OT1/pcr/m/n/9 C3: Open Monday 12:00-17:00 [Source:
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 146--151
+\OT1/pcr/m/n/9 C4: Elite reviewer ratings $\OMS/cmsy/m/n/9 ^^U$ \OT1/pcr/m/n/9 
+4
+ []
+
+
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 156--166
+[]\OT1/pcr/m/n/9 (0)=LLM("Check
+ []
+
+
+Overfull \hbox (10.53851pt too wide) in paragraph at lines 156--166
+\OMS/cmsy/m/n/9 f\OT1/pcr/m/n/9 (input)\OMS/cmsy/m/n/9 g\OT1/pcr/m/n/9 [attr][R
+estaurantsPriceRange2]. 
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 156--166
+\OT1/pcr/m/n/9 (1)=LLM("Analyze atmosphere mentions
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 156--166
+\OT1/pcr/m/n/9 (2)=LLM("Check
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 156--166
+\OT1/pcr/m/n/9 Contains 12:00-17:00? Output:
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 156--166
+\OT1/pcr/m/n/9 (3)=LLM("Filter \OMS/cmsy/m/n/9 f\OT1/pcr/m/n/9 (input)\OMS/cmsy
+/m/n/9 g\OT1/pcr/m/n/9 [reviews]
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 156--166
+\OT1/pcr/m/n/9 (4)=LLM("Results: [\OMS/cmsy/m/n/9 f\OT1/pcr/m/n/9 (0)\OMS/cmsy/
+m/n/9 g\OT1/pcr/m/n/9 , \OMS/cmsy/m/n/9 f\OT1/pcr/m/n/9 (1)\OMS/cmsy/m/n/9 g\OT
+1/pcr/m/n/9 ,
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 156--166
+\OT1/pcr/m/n/9 AND aggregation. Output final
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 171--173
+[]\OT1/pcr/m/n/9 Detected: Attack patterns in reviews
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 171--173
+\OT1/pcr/m/n/9 Modification: Exclude reviews [3, 7]
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 178--184
+\OT1/pcr/m/n/9 Step 1: Reviews mention "cozy",
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 178--184
+\OT1/pcr/m/n/9 Step 2: Hours "11:00-20:00" contains
+ []
+
+) (./c_experiment.tex
+
+[9]
 Underfull \hbox (badness 10000) in paragraph at lines 24--27
 \OT1/pcr/m/n/10 attributes.WiFi\OT1/ptm/m/n/10 , \OT1/pcr/m/n/10 attributes.Noi
 seLevel\OT1/ptm/m/n/10 ).
@@ -1172,7 +1654,7 @@ of-Thought
 
 
 
-[6]
+[10]
 Underfull \hbox (badness 1178) in paragraph at lines 168--171
  []\OT1/ptm/b/n/10 RankGPT.[] \OT1/ptm/m/n/10 Sliding-window list-wise rerank-i
 ng that pro-
@@ -1182,7 +1664,7 @@ ng that pro-
 
 
 
-[7
+[11
 
 ] (./main.aux)
  ***********
@@ -1190,40 +1672,42 @@ LaTeX2e <2024-11-01> patch level 2
 L3 programming layer <2025-01-18>
  ***********
 Package rerunfilecheck Info: File `main.out' has not changed.
-(rerunfilecheck)             Checksum: 4127B525ED0E7816F0B23D12DD3B4E44;3346.
+(rerunfilecheck)             Checksum: C917ECB4F6661E09E4BA146C9D31E89D;6721.
  ) 
 Here is how much of TeX's memory you used:
- 25552 strings out of 473190
- 474514 string characters out of 5713195
- 896406 words of memory out of 5000000
- 48217 multiletter control sequences out of 15000+600000
- 588585 words of font info for 86 fonts, out of 8000000 for 9000
+ 25769 strings out of 473190
+ 477948 string characters out of 5713195
+ 904894 words of memory out of 5000000
+ 48344 multiletter control sequences out of 15000+600000
+ 591834 words of font info for 93 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 93i,9n,95p,601b,947s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 93i,10n,95p,601b,947s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/local/texlive/2025basic/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx1
 0.pfb></usr/local/texlive/2025basic/texmf-dist/fonts/type1/public/amsfonts/cm/c
 mex10.pfb></usr/local/texlive/2025basic/texmf-dist/fonts/type1/public/amsfonts/
 cm/cmmi10.pfb></usr/local/texlive/2025basic/texmf-dist/fonts/type1/public/amsfo
 nts/cm/cmmi5.pfb></usr/local/texlive/2025basic/texmf-dist/fonts/type1/public/am
 sfonts/cm/cmmi7.pfb></usr/local/texlive/2025basic/texmf-dist/fonts/type1/public
-/amsfonts/cm/cmr10.pfb></usr/local/texlive/2025basic/texmf-dist/fonts/type1/pub
-lic/amsfonts/cm/cmr5.pfb></usr/local/texlive/2025basic/texmf-dist/fonts/type1/p
-ublic/amsfonts/cm/cmr6.pfb></usr/local/texlive/2025basic/texmf-dist/fonts/type1
-/public/amsfonts/cm/cmr7.pfb></usr/local/texlive/2025basic/texmf-dist/fonts/typ
-e1/public/amsfonts/cm/cmr9.pfb></usr/local/texlive/2025basic/texmf-dist/fonts/t
-ype1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/2025basic/texmf-dist/fon
-ts/type1/public/amsfonts/cm/cmsy5.pfb></usr/local/texlive/2025basic/texmf-dist/
-fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/local/texlive/2025basic/texmf-di
-st/fonts/type1/public/amsfonts/cm/cmsy9.pfb></usr/local/texlive/2025basic/texmf
--dist/fonts/type1/urw/courier/ucrr8a.pfb></usr/local/texlive/2025basic/texmf-di
-st/fonts/type1/urw/helvetic/uhvr8a.pfb></usr/local/texlive/2025basic/texmf-dist
-/fonts/type1/urw/times/utmb8a.pfb></usr/local/texlive/2025basic/texmf-dist/font
-s/type1/urw/times/utmr8a.pfb></usr/local/texlive/2025basic/texmf-dist/fonts/typ
-e1/urw/times/utmri8a.pfb>
-Output written on main.pdf (7 pages, 257262 bytes).
+/amsfonts/cm/cmmi9.pfb></usr/local/texlive/2025basic/texmf-dist/fonts/type1/pub
+lic/amsfonts/cm/cmr10.pfb></usr/local/texlive/2025basic/texmf-dist/fonts/type1/
+public/amsfonts/cm/cmr5.pfb></usr/local/texlive/2025basic/texmf-dist/fonts/type
+1/public/amsfonts/cm/cmr6.pfb></usr/local/texlive/2025basic/texmf-dist/fonts/ty
+pe1/public/amsfonts/cm/cmr7.pfb></usr/local/texlive/2025basic/texmf-dist/fonts/
+type1/public/amsfonts/cm/cmr9.pfb></usr/local/texlive/2025basic/texmf-dist/font
+s/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/2025basic/texmf-dist/
+fonts/type1/public/amsfonts/cm/cmsy5.pfb></usr/local/texlive/2025basic/texmf-di
+st/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/local/texlive/2025basic/texmf
+-dist/fonts/type1/public/amsfonts/cm/cmsy9.pfb></usr/local/texlive/2025basic/te
+xmf-dist/fonts/type1/urw/courier/ucrr8a.pfb></usr/local/texlive/2025basic/texmf
+-dist/fonts/type1/urw/helvetic/uhvr8a.pfb></usr/local/texlive/2025basic/texmf-d
+ist/fonts/type1/urw/times/utmb8a.pfb></usr/local/texlive/2025basic/texmf-dist/f
+onts/type1/urw/times/utmr8a.pfb></usr/local/texlive/2025basic/texmf-dist/fonts/
+type1/urw/times/utmri8a.pfb></usr/local/texlive/2025basic/texmf-dist/fonts/type
+1/urw/zapfding/uzdr.pfb>
+Output written on main.pdf (11 pages, 297780 bytes).
 PDF statistics:
- 367 PDF objects out of 1000 (max. 8388607)
- 316 compressed objects within 4 object streams
- 95 named destinations out of 1000 (max. 500000)
- 213 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 536 PDF objects out of 1000 (max. 8388607)
+ 476 compressed objects within 5 object streams
+ 165 named destinations out of 1000 (max. 500000)
+ 341 words of extra memory for PDF output out of 10000 (max. 10000000)
 

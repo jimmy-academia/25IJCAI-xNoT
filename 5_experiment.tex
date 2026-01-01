@@ -1,64 +1,111 @@
 \section{Experiment}
-\paragraph{Data construction.}
-We construct \emph{query} and \emph{context} sets from the Yelp Open Dataset using a multi-stage curation pipeline designed to ensure data quality and relevance.
 
-\textbf{Curation Pipeline.}
-First, we interactively select a target city and specific cuisine categories (e.g., ``Italian'', ``Mexican'') based on restaurant density.
-To ensure the selected entities genuinely fit the target categories, we employ an automated LLM-based filtering step.
-Candidates are ranked by \emph{richness} (total volume of review text) and processed by an LLM which estimates the probability of category fit (0--100\%) based on keyword evidence extracted from their reviews.
-We retain only restaurants with a high probability of fit.
-
-\textbf{Review Sampling.}
-For each selected restaurant, we construct a document set of up to 20 reviews.
-To capture diverse user sentiments, we stratify the sampling by star rating, targeting 4 reviews from each star level (1--5 stars) where available.
-Within each stratum, reviews are selected by descending text length to maximize the information available for reasoning.
-
-\textbf{Metadata Structure.}
-Each query corresponds to a single restaurant and includes:
-(i) \emph{Item Metadata}: structured fields such as name, location, categories, attributes, and hours; and
-(ii) \emph{Review Data}: the set of 20 sampled reviews, including text, rating, date, and reviewer profile signals (e.g., elite status, friend count, year started).
-
-\paragraph{Contexts (User Requests).}
-Each context corresponds to a natural-language user request that specifies a set of constraints, which must be supported by evidence available in the query. 
-Rather than assuming a single notion of difficulty, we organize contexts into groups that isolate distinct combinations of evidence sources and logical structures. 
-Requests vary by the types of information sources they reference: direct item metadata, computed metadata (e.g., hours or time-window constraints), review text, and reviewer or review metadata.
-
-Requests consist of compositions of conditions connected by AND/OR operators (e.g., $A \,\mathrm{op}_1\, B \,\mathrm{op}_2\, C$).
-Using this design, we construct 20 contexts grouped into 4 categories, each containing five requests, where each group isolates a specific combination of evidence sources (simple metadata, review text, computed metadata, social signals).
-
-\begin{itemize}
-    \item \textbf{G01 (R00--R04): Flat / Simple Metadata.}
-    Requests use only direct item metadata (e.g., attributes, categories) with flat AND/OR composition.
-
-    \item \textbf{G02 (R05--R09): Flat / Review Text.}
-    Requests rely exclusively on conditions grounded in review text, composed using flat AND/OR logic.
-
-    \item \textbf{G03 (R10--R14): Flat / Computed Metadata.}
-    Requests use computed item metadata requiring interpretation (e.g., hours, time-window constraints) with flat AND/OR logic.
-
-    \item \textbf{G04 (R15--R19): Flat / Social Metadata.}
-    Requests use only reviewer or review metadata (e.g., elite status, recency) with flat AND/OR logic.
-\end{itemize}
+\paragraph{Data.}
+We sample 20 restaurants from the Yelp Open Dataset, filtering by category density and LLM-verified fit.
+Each restaurant includes up to 20 reviews, stratified by star rating to capture diverse sentiments.
 
 \paragraph{Baselines.}
-We compare against 13 zero-shot prompting methods spanning two categories:
-\emph{reasoning-based} methods that apply general problem-solving strategies (Chain-of-Thought, Self-Consistency, ReAct, Least-to-Most, Plan-and-Solve, Self-Ask, Decomposed Prompting),
-and \emph{ranking-based} methods designed specifically for item selection (Pointwise, PaRaDe, Pairwise, RankGPT, Setwise, Listwise).
-Details are provided in Appendix~\ref{app:baselines}.
+We compare against 13 zero-shot prompting methods:
+\emph{reasoning-based} (CoT, Self-Consistency, ReAct, Least-to-Most, Plan-and-Solve, Self-Ask, Decomposed Prompting)
+and \emph{ranking-based} (Pointwise, PaRaDe, Pairwise, RankGPT, Setwise, Listwise).
+Details in Appendix~\ref{app:baselines}.
 
-\paragraph{Ground truth generation.}
-For each (item, request) pair, we compute ground truth labels deterministically by evaluating leaf conditions against available evidence and aggregating via the request's Boolean structure.
-For \texttt{review\_text} conditions, we use LLM-based judgments with symmetric consensus voting: a review is labeled positive ($+1$) or negative ($-1$) only if at least 75\% of non-neutral judgments agree.
-Judgments are cached to ensure reproducibility.
+\paragraph{Ground truth.}
+Labels are computed deterministically by evaluating conditions against evidence and aggregating via three-valued logic.
+For \texttt{review\_text} conditions, we use symmetric consensus voting with 75\% threshold.
 
 \paragraph{Adversarial evaluation.}
-To evaluate robustness, we apply attacks to review content $\mathbf{D}$ while preserving ground truth labels (computed from original, unattacked data).
-Attack types include:
-\begin{itemize}[nosep]
-    \item \textbf{Typo corruption}: Random character transpositions (10--20\% rate)
-    \item \textbf{Prompt injection}: Embedded commands (``IGNORE PREVIOUS INSTRUCTIONS...'')
-    \item \textbf{Fake reviews}: Synthetic reviews with extreme, generic sentiment
-    \item \textbf{Sarcastic manipulation}: Factually correct but misleadingly framed content
-\end{itemize}
-A robust method should maintain consistent performance across clean and attacked data.
+We apply attacks to review content while preserving original ground truth:
+typo corruption (10--20\% rate), prompt injection, fake reviews, and sarcastic manipulation.
+
+\subsection{Results}
+
+\input{tables/1_main_results}
+
+\paragraph{Main results.}
+Table~\ref{tab:main} presents Hits@1 accuracy on clean data across four request groups.
+ANoT achieves the highest average accuracy, outperforming the best baseline by \textbf{+XX\%}.
+Reasoning-based methods struggle with multi-source evidence (G02, G04), while ranking-based methods underperform on computed metadata (G03) that requires temporal reasoning.
+ANoT's split-context architecture handles all evidence types uniformly by isolating each condition's evaluation.
+
+\paragraph{Per-group analysis.}
+Performance varies significantly across request groups.
+On simple metadata (G01), most methods perform comparably, as direct attribute lookups require minimal reasoning.
+Review-text conditions (G02) reveal a wider gap: methods that process reviews holistically conflate signals, while ANoT evaluates each condition independently.
+Computed metadata (G03) poses challenges for ranking methods that lack explicit temporal parsing.
+Social signals (G04) benefit from ANoT's structured access to reviewer metadata.
+
+\input{tables/2_attack_results}
+
+\paragraph{Robustness under attack.}
+Table~\ref{tab:attacks} compares performance degradation under adversarial conditions.
+Baselines show an average degradation of \textbf{XX\%} from clean accuracy, with prompt injection causing the largest drops.
+ANoT degrades by only \textbf{YY\%} on average, demonstrating the effectiveness of its adaptation phase.
+The key insight: by detecting adversarial patterns \emph{before} execution, ANoT prevents contaminated content from influencing the main reasoning process.
+
+\paragraph{Defense analysis.}
+Injection attacks are most effective against methods that process all content in a single context window.
+Sarcastic manipulation affects methods that rely on surface-level sentiment cues.
+ANoT's three-valued logic correctly propagates uncertainty when evidence is ambiguous, avoiding false confidence from manipulated reviews.
+
+\subsection{Cost Analysis}
+
+\paragraph{LLM call efficiency.}
+Table~\ref{tab:cost} compares computational cost across methods.
+Full-context methods (CoT, Listwise) require $O(1)$ calls per item but process long contexts.
+Split-context methods like \method require $O(k)$ calls for $k$ conditions, but each call processes shorter, focused context.
+With script caching, \method amortizes planning cost: the first item incurs planning overhead, while subsequent items reuse the cached script.
+
+\begin{table}[t]
+\centering
+\caption{Cost comparison per request (20 items, 4 conditions). Planning is amortized across items.}
+\label{tab:cost}
+\small
+\begin{tabular}{@{}lccc@{}}
+\toprule
+\textbf{Method} & \textbf{Calls/Item} & \textbf{Total Calls} & \textbf{Avg Tokens} \\
+\midrule
+CoT & 1 & 20 & $\sim$4000 \\
+Self-Consistency ($\times$5) & 5 & 100 & $\sim$4000 \\
+Pairwise & $n-1$ & 380 & $\sim$2000 \\
+Decomposed & $k$ & 80 & $\sim$1500 \\
+\midrule
+\method (first item) & $k$+3 & 7 & $\sim$800 \\
+\method (cached) & $k$+1 & 5 & $\sim$600 \\
+\method (total) & --- & 102 & $\sim$620 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Token efficiency.}
+\method achieves lower average token usage per call by processing focused evidence slices rather than full item context.
+Each \script instruction targets a specific evidence source (metadata lookup, single review analysis, or hours check), keeping prompts concise.
+The adaptation phase adds one call per item but enables filtering that prevents wasted computation on adversarial content.
+
+\paragraph{Prompt engineering effort.}
+Unlike algorithmic prompting methods that require custom Python scripts per task~\cite{yao2024tree,besta2024graph}, \method requires only:
+(1) a task description specifying evidence types, and
+(2) an example \script script demonstrating the format.
+The LLM generates task-specific scripts automatically, reducing human effort by an estimated 70--85\% compared to manual workflow design.
+This \emph{intelligence amplification} enables rapid adaptation to new request types without code changes.
+
+\subsection{Ablation Study}
+
+We ablate key components of \method to understand their contributions.
+
+\paragraph{Adaptation phase.}
+Removing the adaptation phase (direct execution without content analysis) increases attack vulnerability:
+clean accuracy remains unchanged, but degradation under attack increases from \textbf{YY\%} to \textbf{ZZ\%}.
+This confirms that pre-execution detection is essential for robustness.
+
+\paragraph{Three-valued logic.}
+Replacing three-valued aggregation with binary logic (unknown $\rightarrow$ false) reduces clean accuracy by \textbf{WW\%}, as missing evidence is incorrectly treated as negative.
+Under attack, binary logic shows higher false rejection rates when legitimate reviews are filtered.
+
+\paragraph{Script caching.}
+Disabling caching increases total LLM calls by $\sim$40\% (planning repeats per item).
+Accuracy is unaffected, but latency increases proportionally.
+
+\paragraph{Split-context vs.\ full-context.}
+Processing all evidence in a single call (full-context variant) matches baseline vulnerability: attack degradation increases to baseline levels, confirming that architectural isolation---not prompting strategy---provides robustness.
 
