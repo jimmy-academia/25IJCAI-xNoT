@@ -2,4 +2,109 @@
 
 Three value logic~\cite{libkin2016sql,fitting1985kripke,fitting1994kleene} with truth values {True, False, Unknown}
 
+We formalize the structured recommendation task, define the input format, and specify the evaluation protocol.
 
+\subsection{Task Definition}
+
+Given a set of candidate items $\mathcal{I} = \{I_1, \ldots, I_n\}$ and a user request $R$, the task is to identify the item $I^* \in \mathcal{I}$ that best satisfies the request's constraints.
+Each item combines structured metadata with unstructured content from multiple sources, and requests specify complex Boolean conditions over heterogeneous evidence types.
+
+\subsection{Input Format}
+
+\paragraph{Items.}
+Each item $I$ is a tuple $(\mathbf{m}, \mathbf{h}, \mathbf{D})$ where:
+\begin{itemize}
+    \item $\mathbf{m}$ is a structured metadata dictionary containing categorical and Boolean attributes (e.g., \texttt{WiFi}: ``free'', \texttt{NoiseLevel}: ``quiet'', \texttt{OutdoorSeating}: True).
+    \item $\mathbf{h}$ is an hours dictionary mapping days to time ranges (e.g., \texttt{Monday}: ``7:00--19:00'').
+    \item $\mathbf{D} = \{d_1, \ldots, d_k\}$ is a set of $k$ documents (reviews), each containing:
+    \begin{itemize}
+        \item Text content $t_j$ (the review body)
+        \item Review metadata $\mathbf{r}_j$ (star rating, date, usefulness votes)
+        \item Reviewer profile $\mathbf{u}_j$ (elite status, friend count, review history)
+    \end{itemize}
+\end{itemize}
+
+\paragraph{Requests.}
+Each request $R$ is a Boolean expression tree where:
+\begin{itemize}
+    \item \emph{Leaf nodes} specify individual conditions with an aspect name and evidence specification.
+    \item \emph{Internal nodes} apply Boolean operators (AND, OR) to combine child results.
+\end{itemize}
+
+Evidence specifications indicate where to find supporting information:
+\begin{itemize}
+    \item \texttt{item\_meta}: Direct lookup in $\mathbf{m}$ (e.g., check if WiFi is free)
+    \item \texttt{item\_meta\_hours}: Time-window containment in $\mathbf{h}$ (e.g., open Monday 10am--3pm)
+    \item \texttt{review\_text}: Semantic analysis of review content $t_j$ (e.g., mentions good matcha)
+    \item \texttt{review\_meta}: Filtering and aggregation over $\mathbf{r}_j, \mathbf{u}_j$ (e.g., elite reviewers gave high ratings)
+\end{itemize}
+
+\subsection{Three-Valued Logic}
+
+Real-world data is often incomplete: attributes may be missing, reviews may not mention relevant aspects, and evidence may be ambiguous.
+We adopt three-valued logic where each condition evaluates to:
+\begin{equation}
+    v \in \{+1, 0, -1\} \quad \text{(satisfied, unknown, violated)}
+\end{equation}
+
+Boolean operators extend naturally with the following semantics:
+
+\begin{center}
+\begin{tabular}{c|ccc}
+\textbf{AND} & $+1$ & $0$ & $-1$ \\
+\hline
+$+1$ & $+1$ & $0$ & $-1$ \\
+$0$  & $0$  & $0$ & $-1$ \\
+$-1$ & $-1$ & $-1$ & $-1$
+\end{tabular}
+\quad
+\begin{tabular}{c|ccc}
+\textbf{OR} & $+1$ & $0$ & $-1$ \\
+\hline
+$+1$ & $+1$ & $+1$ & $+1$ \\
+$0$  & $+1$ & $0$  & $0$ \\
+$-1$ & $+1$ & $0$  & $-1$
+\end{tabular}
+\end{center}
+
+Intuitively: for AND, any violation dominates; for OR, any satisfaction dominates.
+Unknown values propagate only when they could affect the outcome.
+
+\subsection{Ground Truth Generation}
+
+For each (item, request) pair, we compute ground truth labels deterministically:
+\begin{enumerate}
+    \item Evaluate each leaf condition against available evidence
+    \item Aggregate results using the request's Boolean structure
+    \item Store the final label $y \in \{+1, 0, -1\}$
+\end{enumerate}
+
+For \texttt{review\_text} conditions, we use LLM-based judgments with symmetric consensus voting: a review is labeled positive ($+1$) or negative ($-1$) only if at least 75\% of non-neutral judgments agree.
+Judgments are cached to ensure reproducibility.
+
+\subsection{Evaluation Protocol}
+
+\paragraph{Top-1 Selection.}
+Each request is designed to have exactly one item with ground truth $y = +1$.
+This enables unambiguous evaluation: for each request, there is a single correct answer among the $n$ candidates.
+
+\paragraph{Hits@k Metric.}
+We evaluate using Hits@k, measuring whether the correct item appears in the method's top-$k$ predictions:
+\begin{equation}
+    \text{Hits@}k = \frac{1}{|R|} \sum_{r \in R} \mathbf{1}[\text{rank}_r(I^*) \leq k]
+\end{equation}
+where $\text{rank}_r(I^*)$ is the position of the ground-truth item in the method's ranking for request $r$.
+Hits@1 measures exact match accuracy.
+
+\subsection{Adversarial Setting}
+
+To evaluate robustness, we apply attacks to the review content $\mathbf{D}$ while preserving ground truth labels (which are computed from the original, unattacked data).
+Attack types include:
+\begin{itemize}
+    \item \textbf{Typo corruption}: Random character transpositions (10--20\% rate)
+    \item \textbf{Prompt injection}: Embedded commands (``IGNORE PREVIOUS INSTRUCTIONS...'')
+    \item \textbf{Fake reviews}: Synthetic reviews with extreme, generic sentiment
+    \item \textbf{Sarcastic manipulation}: Factually correct but misleadingly framed content
+\end{itemize}
+
+A robust method should maintain consistent performance across clean and attacked data.

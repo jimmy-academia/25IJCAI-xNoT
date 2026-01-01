@@ -1,29 +1,79 @@
-\section{Related Works}
-% Many decision-support settings require aggregating large collections of user-generated text in to a single artifact, not to provide a single summary or locating the correct answer, but to provide faithful representation of the participating opinions. However, 
+\section{Related Work}
 
+We organize prior work along two axes: how methods handle input context (full-context vs.\ split-context) and their primary application domain (general reasoning vs.\ ranking).
 
-% % 1 This phenomenon parallels the broader risk of "AI echo chambers," where generative models systematically amplify dominant narratives and reduce conceptual variation. See Messeri & Crockett (2024), "The Homogenizing Effect of Large Language Models on Human Expression and Thought," which argues that LLMs displace idiosyncratic forms of thought; and Besser et al. (2024), "Large Language Models Are Echo Chambers," (ACL 2024), which demonstrates LLMs' tendency to replicate user biases rather than correct them.
+\subsection{Full-Context Prompt Schemes}
 
-% Option 2: The "Sycophancy" Footnote
-% % Use this if your paper focuses on adversarial steering or the model just "agreeing" with the prompt.
+Full-context methods process all available information within a single LLM context window, regardless of the number of reasoning steps employed.
 
-% % 1 This vulnerability is exacerbated by "sycophancy"—the tendency of aligned models to prioritize user agreement over factual or distributional robustness. See Wei et al. (2024), "Simple Synthetic Data Reduces Sycophancy in Large Language Models" and Sharma et al. (2024), "Towards Understanding Sycophancy in Large Language Models," which detail how models collapse to the user's implicit view, creating a false consensus loop.
+\paragraph{Chain-of-Thought (CoT).}
+Wei et al.~\cite{wei2022chain} demonstrated that prompting LLMs to generate intermediate reasoning steps improves performance on arithmetic and commonsense tasks.
+\emph{Self-Consistency}~\cite{wang2022self} extends this by sampling multiple reasoning paths and selecting the most consistent answer.
+While effective for homogeneous text, these methods struggle when relevant evidence is dispersed across structured, heterogeneous sources.
 
-% Title: Generative Echo Chamber? Effects of LLM-Powered Search Systems on Diverse Information Seeking
+\paragraph{Agentic Reasoning.}
+ReAct~\cite{yao2022react} interleaves reasoning with actions (e.g., searching, retrieving) in a multi-turn loop, but still processes all retrieved information together.
+Plan-and-Solve~\cite{wang2023plan} generates explicit plans before execution, yet executes within a unified context.
+Self-Ask~\cite{press2022measuring} decomposes questions into sub-questions answered sequentially, but aggregates all answers in shared context for the final response.
 
+\paragraph{Decomposition Methods.}
+Least-to-Most prompting~\cite{zhou2022least} breaks complex problems into simpler subproblems solved incrementally.
+However, solutions to earlier subproblems remain in context, allowing errors or irrelevant information to propagate.
 
-% Trace provides a general mechanism to optimize code and prompts based on execution traces, but it treats all intermediate steps as generic graph nodes. It does not expose LLM-specific workflow concepts—such as planner/executor/verifier roles, early-exit strategies, or edge-vs-cloud decomposition—as first-class optimization targets. 
+\paragraph{Limitations.}
+Full-context schemes share a fundamental vulnerability: when processing structured multi-source data, they conflate evidence from different sources within the same context window.
+This makes them susceptible to: (1) distraction from irrelevant content that happens to be salient; (2) confusion when evidence sources require different interpretation strategies; and (3) adversarial manipulation where malicious content in one source (e.g., a fake review) influences reasoning about others.
 
-% In contrast, out method explicitly tailor the optimizer to systematically introduce, reorganize, exploit multi-step LLM workflows, and reasoning about workflow structure. We further introduce cost and privacy objectives.
+\subsection{Split-Context Prompt Schemes}
 
+Split-context methods divide input data into isolated segments, processing each separately before aggregation.
 
-% ADAS instantiates ADAS as Meta Agent Search: a black-box search in code space where a meta-agent iteratively proposes new agents, evaluates them on validation sets, and stores them in an archive. This design is powerful for discovering novel agent patterns but is inherently compute-intensive and sample-inefficient: each design update requires compiling a new agent and running full task-level evaluations, without reusing internal execution structure as a learning signal. 
+\paragraph{Decomposed Prompting.}
+Khot et al.~\cite{khot2022decomposed} propose using specialized sub-task handlers orchestrated by a decomposer.
+Each handler focuses on a specific capability and operates on a subset of the input.
+This architectural choice provides natural isolation between evidence sources.
 
-% By contrast, our method assumes a fixed task and a fixed program structure (e.g., a math solver or restaurant decision workflow) and performs trace-guided local updates to the internal LLM calls and control flow. We reuse the execution trace of each run to update the workflow directly, closer in spirit to gradient-based training on a supervised objective than to open-ended evolutionary search.
+\paragraph{Our Approach: ANoT.}
+We extend the split-context paradigm with three key innovations: (1) \emph{adaptive planning} that maps user requirements to evidence sources before execution; (2) \emph{content-aware adaptation} that detects and handles heterogeneity or attacks; and (3) \emph{explicit evidence tracking} using a structured script language that enables verification.
 
-% % https://chatgpt.com/g/g-p-69374957d8e08191827d3ab4ffe59de1-self-script-executaion-mode/c/6939dc6b-6158-832b-a503-95a53f38a120
+\subsection{Ranking Methods}
 
-% A²Flow extends AFLOW’s Monte Carlo Tree Search (MCTS) framework for agentic workflow generation by introducing self-adaptive abstraction operators. Operators are first extracted from expert demonstrations via a three-stage pipeline—case-based operator generation, LLM-guided clustering, and deep refinement using long chain-of-thought and multi-path reasoning—and implemented as LLM-driven execution units (e.g., Planner(), Executor(), Validator()). Workflows are then optimized by AFLOW-style node-level search: the LLM-based optimizer expands workflows by inserting or modifying operators, and each candidate workflow is executed multiple times on a validation set to obtain task-level scores that drive MCTS updates. While this yields fully automated operators and strong performance, optimization remains search-based and module-level: operators are treated as black-box LLM calls, and improvement relies on repeated full-workflow evaluations. 
+Recommendation and ranking represent a distinct application domain with specialized methods.
 
-% In contrast, we start from a single human-written Python workflow and perform trace-guided local edits to its internal LLM calls and control flow. Rather than searching over graphs of abstraction operators, our method directly uses the execution trace of each run to adapt the fine-grained workflow structure under a supervised objective (accuracy, cost, privacy), allowing the optimizer to modify both the overall structure and individual LLM invocations inside the program.
+\paragraph{Pairwise and Setwise Comparison.}
+Pairwise methods~\cite{qin2023large} compare candidates in pairs, aggregating wins into a ranking.
+Setwise approaches~\cite{sun2023chatgpt} compare small sets (3--5 items) with tournament-style elimination.
+These reduce the cognitive load per comparison but require $O(n^2)$ or $O(n \log n)$ LLM calls.
 
+\paragraph{Listwise Ranking.}
+RankGPT~\cite{sun2023chatgpt} uses sliding-window reranking, while direct listwise methods produce complete rankings in a single call.
+These are efficient but struggle when candidate descriptions are long or heterogeneous.
+
+\paragraph{Pointwise Scoring.}
+Fine-grained relevance scoring~\cite{liang2022holistic} rates each candidate independently on a scale, then ranks by score.
+This naturally supports split-context processing, as each candidate can be evaluated in isolation.
+
+\paragraph{Orthogonality to Context Handling.}
+Ranking strategies are orthogonal to context handling: pairwise methods can use either full-context (comparing two complete items) or split-context (extracting features separately, then comparing).
+Our experiments evaluate both reasoning-based and ranking-based methods to understand their interaction with context handling.
+
+\subsection{LLM Robustness and Adversarial Attacks}
+
+\paragraph{Prompt Injection.}
+Prompt injection attacks embed malicious instructions within user-provided content~\cite{perez2022ignore,greshake2023not}.
+In multi-source settings, reviews or metadata fields can contain hidden commands attempting to override model behavior.
+
+\paragraph{Data Poisoning.}
+Fake reviews and coordinated manipulation are endemic to online platforms~\cite{mukherjee2013yelp}.
+LLMs processing such data must distinguish genuine signals from adversarial noise.
+
+\paragraph{Defense Approaches.}
+Prior work on defense prompts~\cite{jain2023baseline} adds explicit warnings about potential attacks.
+However, our experiments reveal a surprising finding: defense prompts consistently \emph{hurt} performance on clean data, as models become overly conservative.
+This motivates our split-context approach, which achieves robustness through architectural isolation rather than explicit warnings.
+
+\subsection{Structured Text Understanding}
+
+Recent work has identified challenges in LLM reasoning over structured text formats.
+StrucText-Eval~\cite{zhou2024structext} benchmarks LLM performance on JSON, HTML, and other structured formats, finding significant degradation compared to plain text.
+Our work addresses a complementary challenge: reasoning over \emph{content} that is structured across multiple sources, rather than parsing structured \emph{syntax}.

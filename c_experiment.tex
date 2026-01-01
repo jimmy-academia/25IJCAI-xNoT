@@ -112,11 +112,69 @@ where $R$ is the set of requests and $\text{rank}(r)$ is the position of the gro
 Hits@1 measures whether the method's top recommendation exactly matches the gold item.
 
 \subsection{Baselines}
+\label{app:baselines}
+
+We evaluate against 13 zero-shot prompting baselines organized into two categories.
+
+\subsubsection{Reasoning-Based Methods}
 
 \paragraph{Chain-of-Thought (CoT).}
-Our baseline is a zero-shot Chain-of-Thought prompting approach.
+Zero-shot prompting where the LLM analyzes all candidates in a single context window and selects the best match.
 Given a user request and the set of 20 candidate restaurants (each with metadata and reviews), the LLM is prompted to:
 (1) analyze each restaurant's suitability for the user's stated requirements;
 (2) select the single best-matching restaurant from the candidates.
-The prompt includes all restaurant information in a single context window, allowing the model to compare options directly.
 No few-shot examples are provided, testing the model's inherent reasoning capabilities.
+
+\paragraph{Self-Consistency (CoT-SC).}
+Extends Chain-of-Thought by sampling multiple independent reasoning paths (typically 5) and selecting the final answer via majority vote.
+This reduces sensitivity to any single reasoning chain's errors.
+
+\paragraph{ReAct.}
+Interleaves reasoning (Thought) with actions (examine reviews, check ratings, analyze requirements) in a multi-turn loop.
+The model alternates between thinking about the problem and taking actions to gather information, with a maximum of 5 steps before making the final selection.
+
+\paragraph{Least-to-Most (L2M).}
+Decomposes the user request into a sequence of simpler subproblems, solves each subproblem incrementally (with solutions to earlier subproblems available as context), then synthesizes the final recommendation from all partial solutions.
+
+\paragraph{Plan-and-Solve (PS).}
+Generates an explicit multi-step plan before execution.
+The model first devises a strategy for evaluating candidates, then systematically follows the plan to analyze each restaurant against the user's requirements.
+
+\paragraph{Self-Ask.}
+Generates follow-up questions about the user request (e.g., ``What specific attributes should I check for this requirement?''), answers each question using the available evidence, then uses the accumulated answers to make the final selection.
+
+\paragraph{Decomposed Prompting.}
+Uses specialized sub-task handlers orchestrated by a decomposer.
+Handlers include: extract\_requirements (parse user constraints), analyze\_reviews (assess review sentiment), count\_evidence (tally supporting/opposing mentions), and make\_decision (synthesize final ranking).
+Each handler focuses on a specific capability, improving modularity.
+
+\subsubsection{Ranking-Based Methods}
+
+\paragraph{Pointwise (Fine-Grained).}
+Scores each candidate independently on a 4-point relevance scale: Highly Relevant (3), Relevant (2), Somewhat Relevant (1), Not Relevant (0).
+Candidates are then ranked by their scores.
+Complexity: $O(n)$ LLM calls for $n$ candidates.
+
+\paragraph{PaRaDe.}
+Few-shot demonstration-based ranking that provides explicit examples of how to compare and rank candidates.
+The demonstrations guide the model toward consistent ranking behavior.
+
+\paragraph{Pairwise (PRP).}
+Compares all pairs of candidates with the prompt ``Which is more relevant to the user's request: A or B?''
+Aggregates pairwise wins into a total score for each candidate, then ranks by win count.
+Complexity: $O(n^2)$ LLM calls for $n$ candidates.
+
+\paragraph{RankGPT.}
+Sliding-window listwise reranking that processes candidates in overlapping windows.
+The model ranks items within each window, and the process iterates to refine the global ranking.
+Balances context length constraints with ranking quality.
+
+\paragraph{Setwise.}
+Compares candidates in sets (typically 3--5 items) rather than pairs.
+For each set, the model identifies the best candidate; this process repeats with tournament-style elimination.
+Offers a middle ground between pairwise granularity and listwise efficiency.
+
+\paragraph{Listwise.}
+Single-pass ranking where the LLM outputs a complete permutation of all candidates in one response.
+The model sees all items simultaneously and produces the full ranking directly.
+Complexity: $O(1)$ LLM calls (single call), but requires sufficient context length.
