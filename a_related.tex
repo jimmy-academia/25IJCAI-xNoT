@@ -131,3 +131,58 @@ Three-valued logic has precedent in database systems (SQL NULL handling) and kno
 \end{itemize}
 
 This semantic precision is essential for reliable multi-source reasoning where evidence quality varies significantly.
+
+\subsection{Structured Data Processing in LLMs}
+
+LLMs increasingly process heterogeneous data combining structured and unstructured sources.
+
+\paragraph{Semantic Parsing.}
+Text-to-SQL systems~\cite{yu2018spider} demonstrate LLM capabilities for structured data queries.
+However, these focus on single-source structured data without adversarial considerations.
+\method extends to multi-source settings where structured metadata and unstructured reviews must be integrated with appropriate trust weighting.
+
+\paragraph{Table Understanding.}
+Recent work on table-based QA shows LLMs can reason over tabular data~\cite{chen2020hybridqa}.
+These methods typically assume clean, trustworthy inputs---a problematic assumption when user-generated content enters the pipeline.
+\method's split-context design addresses this by isolating high-reliability structured data from potentially adversarial unstructured sources.
+
+\paragraph{Multi-Modal Reasoning.}
+Multi-modal LLMs process diverse input types (text, images, tables), but typically in a unified context.
+\method's contribution is demonstrating that \emph{deliberate context separation}---rather than unified processing---improves robustness when input sources have varying reliability.
+
+\subsection{Uncertainty Quantification in LLMs}
+
+Reliable AI systems must distinguish confident predictions from uncertain ones.
+
+\paragraph{Calibration.}
+LLM confidence calibration research~\cite{kadavath2022language} focuses on matching predicted probabilities to actual accuracy.
+However, calibration addresses uncertainty in model predictions, not uncertainty in evidence.
+\method's three-valued logic addresses the latter: explicitly marking conditions as unknown when evidence is missing or ambiguous.
+
+\paragraph{Abstention Mechanisms.}
+Some systems allow models to abstain from answering when uncertain~\cite{kamath2020selective}.
+\method extends this concept to compositional reasoning: unknown values propagate through Boolean logic, allowing the system to abstain from sub-conclusions while still making confident assertions about other conditions.
+
+\paragraph{Epistemic vs.\ Aleatoric Uncertainty.}
+The distinction between model uncertainty (epistemic) and data uncertainty (aleatoric) is well-studied in Bayesian deep learning.
+\method's three-valued logic captures a form of aleatoric uncertainty: the 0 (unknown) value represents irreducible ambiguity in the evidence, not model confusion.
+This distinction is crucial for recommendation systems where ``no evidence about WiFi'' differs fundamentally from ``conflicting evidence about WiFi.''
+
+\subsection{Compositional Reasoning}
+
+Complex reasoning requires combining simpler judgments---a challenge for neural models.
+
+\paragraph{Systematic Generalization.}
+Neural models famously struggle with systematic compositional generalization~\cite{lake2018generalization}: learning to combine known components in novel ways.
+\method sidesteps this by making composition explicit: Boolean operators (AND/OR) are defined externally, not learned.
+The LLM evaluates individual conditions; composition follows formal logic.
+
+\paragraph{Modular Reasoning.}
+Modular approaches decompose complex tasks into reusable components~\cite{andreas2016neural}.
+\method adopts this philosophy through the \script format: each instruction is a self-contained module that can be validated independently.
+This modularity enables robustness---a corrupted module (adversarial review) can be excluded without affecting other modules.
+
+\paragraph{Decomposition Benefits.}
+Prior work shows that decomposing complex reasoning improves LLM accuracy~\cite{zhou2022least}.
+\method extends this finding to robustness: decomposition not only improves accuracy but also \emph{isolates} failures.
+When evidence sources are processed independently, adversarial content in one source cannot cascade to affect conclusions about unrelated sources.

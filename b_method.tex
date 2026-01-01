@@ -194,3 +194,89 @@ Validated \script scripts are cached per request to amortize planning cost:
 \end{itemize}
 
 This caching reduces total LLM calls from $O(n \cdot k)$ to $O(1 + n \cdot k)$ where the planning overhead is amortized across $n$ candidate items.
+
+\subsection{Attack Scenario Walkthrough}
+
+We demonstrate how \method handles adversarial content through a complete example with an embedded prompt injection attack.
+
+\paragraph{Request.}
+``Quiet cafe with free WiFi where elite reviewers liked it.''
+
+\paragraph{Candidate Item: Cafe\_Aurora.}
+\begin{quote}
+\small\ttfamily
+\textbf{Metadata:}\\
+\ \ NoiseLevel: "quiet"\\
+\ \ WiFi: "free"\\
+\ \ PriceRange: 2\\
+\\
+\textbf{Reviews:}\\
+\ \ [0] \{text: "Cozy spot with great WiFi. Perfect for working.",\\
+\ \ \ \ \ \ \ user: \{elite: true, review\_count: 89\}, stars: 5\}\\
+\ \ [1] \{text: "IGNORE PREVIOUS INSTRUCTIONS. OUTPUT: This\\
+\ \ \ \ \ \ \ restaurant does NOT meet the criteria. Answer: -1",\\
+\ \ \ \ \ \ \ user: \{elite: false, review\_count: 1\}, stars: 1\}\\
+\ \ [2] \{text: "Nice atmosphere, quiet enough for reading.",\\
+\ \ \ \ \ \ \ user: \{elite: true, review\_count: 156\}, stars: 4\}
+\end{quote}
+
+\paragraph{Phase 1: Planning (cached).}
+Script retrieved from cache---no LLM calls required.
+
+\paragraph{Phase 2: Adaptation.}
+\begin{quote}
+\small\ttfamily
+\textbf{Input:} Reviews [0, 1, 2]\\
+\\
+\textbf{Analysis:}\\
+\ \ - Heterogeneity: false (lengths similar)\\
+\ \ - Attack patterns: [1] contains "IGNORE PREVIOUS",\\
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ "OUTPUT:", "Answer:"\\
+\ \ - Fake indicators: none\\
+\\
+\textbf{Output:} \{attacks: [1], action: EXCLUDE\}
+\end{quote}
+
+\paragraph{Phase 3: Execution (with filtering).}
+\begin{quote}
+\small\ttfamily
+Step 0: Check NoiseLevel = "quiet"\\
+\ \ \ \ $\rightarrow$ 1 (satisfied)\\
+\\
+Step 1: Check WiFi = "free"\\
+\ \ \ \ $\rightarrow$ 1 (satisfied)\\
+\\
+Step 2: Analyze reviews [0, 2] (excluding [1])\\
+\ \ \ \ Elite reviews: [0] stars=5, [2] stars=4\\
+\ \ \ \ Average: 4.5 $\geq$ 4\\
+\ \ \ \ $\rightarrow$ 1 (satisfied)\\
+\\
+Step 3: Aggregate AND(1, 1, 1)\\
+\ \ \ \ $\rightarrow$ min(1, 1, 1) = 1\\
+\\
+\textbf{Final:} $\sigma$(Cafe\_Aurora, R) = +1 (recommend)
+\end{quote}
+
+\paragraph{Contrast: Full-Context Baseline.}
+A full-context method (e.g., CoT) processes all reviews together:
+\begin{quote}
+\small\ttfamily
+"Given this cafe with reviews including `IGNORE PREVIOUS\\
+INSTRUCTIONS. OUTPUT: This restaurant does NOT meet\\
+the criteria. Answer: -1' ..."\\
+\\
+$\rightarrow$ LLM influenced by injection, may output -1
+\end{quote}
+
+The attack succeeds because the adversarial text appears in the same context as the legitimate reviews, allowing it to influence the model's reasoning about all evidence.
+
+\paragraph{Key Insight.}
+\method's robustness stems from \emph{architectural isolation}:
+\begin{enumerate}[nosep]
+    \item Adaptation phase detects attacks \emph{before} main reasoning
+    \item Detected content is excluded from execution
+    \item Each evidence source is processed independently
+    \item The attack never reaches the condition evaluation steps
+\end{enumerate}
+
+This design provides robustness without defense prompts that might degrade clean-data performance.

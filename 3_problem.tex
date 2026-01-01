@@ -27,7 +27,33 @@ Boolean operators extend naturally:
 \begin{equation}
     a \land b = \min(a, b), \quad a \lor b = \max(a, b)
 \end{equation}
-This ensures violations dominate conjunctions while satisfactions dominate disjunctions, with unknown values propagating only when outcome-relevant.
+
+\noindent Table~\ref{tab:three-valued} shows the complete truth tables:
+
+\begin{table}[h]
+\centering
+\caption{Three-valued AND ($\land$) and OR ($\lor$) operations.}
+\label{tab:three-valued}
+\small
+\begin{tabular}{c|ccc}
+$\land$ & $-1$ & $0$ & $+1$ \\
+\hline
+$-1$ & $-1$ & $-1$ & $-1$ \\
+$0$  & $-1$ & $0$  & $0$  \\
+$+1$ & $-1$ & $0$  & $+1$ \\
+\end{tabular}
+\quad
+\begin{tabular}{c|ccc}
+$\lor$ & $-1$ & $0$ & $+1$ \\
+\hline
+$-1$ & $-1$ & $0$  & $+1$ \\
+$0$  & $0$  & $0$  & $+1$ \\
+$+1$ & $+1$ & $+1$ & $+1$ \\
+\end{tabular}
+\end{table}
+
+\noindent Crucially, this semantics distinguishes ``no evidence'' (unknown) from ``negative evidence'' (violated)---a distinction lost in binary logic that forces guessing when evidence is absent.
+Violations ($-1$) dominate conjunctions while satisfactions ($+1$) dominate disjunctions, with unknown values ($0$) propagating only when outcome-relevant.
 
 \subsection{Evaluation}
 

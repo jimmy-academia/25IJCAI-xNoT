@@ -44,6 +44,27 @@ Based on detected conditions, the workflow may be modified---e.g., adding a filt
 Critically, adaptation happens \emph{before} execution: the main reasoning phase never sees potentially adversarial content, only the controlled detection phase does.
 This architectural isolation provides robustness without degrading performance on clean data.
 
+\begin{algorithm}[t]
+\caption{Adaptation Phase Detection}
+\label{alg:adaptation}
+\begin{algorithmic}[1]
+\REQUIRE Reviews $\mathbf{D} = \{d_1, \ldots, d_k\}$, thresholds $\theta_{\text{het}}, \theta_{\text{fake}}$
+\ENSURE Flags: heterogeneity, attack indices, fake indices
+\STATE $\sigma^2 \leftarrow \text{Var}(\{|d_i| : d_i \in \mathbf{D}\})$ \COMMENT{Length variance}
+\STATE heterogeneity $\leftarrow (\sigma^2 > \theta_{\text{het}})$
+\STATE attacks $\leftarrow \emptyset$; fake $\leftarrow \emptyset$
+\FOR{$i = 1$ \TO $k$}
+    \IF{$d_i$ contains \texttt{INJECTION\_PATTERNS}}
+        \STATE attacks $\leftarrow$ attacks $\cup \{i\}$
+    \ENDIF
+    \IF{uniformity\_score$(d_i) > \theta_{\text{fake}}$}
+        \STATE fake $\leftarrow$ fake $\cup \{i\}$
+    \ENDIF
+\ENDFOR
+\RETURN (heterogeneity, attacks, fake)
+\end{algorithmic}
+\end{algorithm}
+
 \subsection{Phase 3: Execution}
 
 Execution runs the (possibly adapted) script step-by-step.
@@ -52,3 +73,21 @@ Each evidence source is processed independently, preventing cross-contamination 
 
 The final step aggregates evidence using three-valued logic (Section~\ref{sec:problem}), ensuring correct compositional reasoning: for AND, any violation dominates; for OR, any satisfaction dominates; unknown values propagate only when they could affect the outcome.
 This preserves minority viewpoints---a single negative review is not drowned out by neutral ones.
+
+\begin{algorithm}[t]
+\caption{Script Execution with Caching}
+\label{alg:execution}
+\begin{algorithmic}[1]
+\REQUIRE Script $S = [(0), (1), \ldots, (n)]$, item $I$, excluded indices $E$
+\ENSURE Final three-valued result $\in \{-1, 0, +1\}$
+\STATE cache $\leftarrow \{\}$
+\FOR{\textbf{each} step $(j)$ \textbf{in} $S$}
+    \STATE prompt $\leftarrow$ resolve(\texttt{\{(input)\}} $\to I$, \texttt{\{(k)\}} $\to$ cache[$k$])
+    \IF{step references reviews AND $E \neq \emptyset$}
+        \STATE prompt $\leftarrow$ filter\_reviews(prompt, $E$)
+    \ENDIF
+    \STATE cache[$j$] $\leftarrow$ LLM(prompt)
+\ENDFOR
+\RETURN cache[$n$] \COMMENT{Final aggregated result}
+\end{algorithmic}
+\end{algorithm}
