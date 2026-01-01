@@ -1,0 +1,90 @@
+% ANoT Architecture Figure - Compact Single-Column Version
+% Include in main document with: \input{figs/architecture_compact}
+
+\begin{figure}[t]
+\centering
+\resizebox{\columnwidth}{!}{%
+\begin{tikzpicture}[
+    % Node styles
+    phase/.style={
+        rectangle, rounded corners=2pt,
+        minimum width=2.2cm, minimum height=0.5cm,
+        font=\scriptsize\bfseries, text=white
+    },
+    phase1/.style={phase, fill=blue!70!black},
+    phase2/.style={phase, fill=orange!80!black},
+    phase3/.style={phase, fill=green!60!black},
+    box/.style={
+        rectangle, rounded corners=2pt, draw=gray!50,
+        fill=gray!5, minimum width=2cm, minimum height=0.4cm,
+        font=\tiny, align=center
+    },
+    input/.style={
+        rectangle, rounded corners=2pt, draw=blue!50, fill=blue!8,
+        minimum width=1.8cm, minimum height=0.4cm,
+        font=\tiny, align=center
+    },
+    output/.style={
+        ellipse, draw=green!60!black, fill=green!10,
+        minimum width=0.8cm, minimum height=0.4cm,
+        font=\tiny\bfseries, align=center
+    },
+    evidence/.style={
+        rectangle, rounded corners=1pt, draw=purple!40, fill=purple!5,
+        minimum width=0.7cm, minimum height=0.35cm,
+        font=\tiny, align=center
+    },
+    arrow/.style={-{Stealth[length=1.5mm]}, thick, gray!60},
+    note/.style={font=\tiny\itshape, text=gray}
+]
+
+% Vertical layout
+\def\vgap{-1.2}
+
+% ===== INPUT =====
+\node[input] (request) at (0, 0) {Request $R$};
+\node[input, right=0.3cm of request] (items) {Items $\mathcal{I}$};
+
+% ===== PHASE 1 =====
+\node[phase1] (p1) at (0, \vgap) {1. Planning};
+\node[box, right=0.2cm of p1] (lwt) {LWT Script};
+\node[note, right=0.1cm of lwt] {(cached)};
+
+% ===== PHASE 2 =====
+\node[phase2] (p2) at (0, 2*\vgap) {2. Adaptation};
+\node[box, right=0.2cm of p2, minimum width=2.4cm] (adapt) {Detect \& Modify};
+
+% ===== PHASE 3 =====
+\node[phase3] (p3) at (0, 3*\vgap) {3. Execution};
+
+% Split context evidence boxes
+\node[evidence, right=0.3cm of p3] (e1) {Meta};
+\node[evidence, right=0.05cm of e1] (e2) {Hours};
+\node[evidence, right=0.05cm of e2] (e3) {Review};
+
+% Three-valued indicators
+\node[font=\tiny, below=0.02cm of e1] {$+1$};
+\node[font=\tiny, below=0.02cm of e2] {$+1$};
+\node[font=\tiny, below=0.02cm of e3] {$0$};
+
+% Aggregation symbol
+\node[right=0.15cm of e3, font=\scriptsize] (agg) {$\xrightarrow{\land/\lor}$};
+
+% ===== OUTPUT =====
+\node[output, right=0.1cm of agg] (result) {$\sigma$};
+
+% ===== ARROWS =====
+\draw[arrow] (request.south) -- (p1.north);
+\draw[arrow] (p1.south) -- (p2.north);
+\draw[arrow] (p2.south) -- (p3.north);
+\draw[arrow] (items.south) |- ($(p3.north)+(0.3,0.15)$);
+\draw[arrow] (lwt.south) |- (adapt.north);
+
+% Key insight
+\node[note, below=0.15cm of p3, xshift=1.5cm] {Split-context $\rightarrow$ isolation};
+
+\end{tikzpicture}
+}
+\caption{ANoT architecture: Planning generates cached scripts, Adaptation detects attacks, Execution processes evidence in isolation with three-valued aggregation.}
+\label{fig:arch}
+\end{figure}

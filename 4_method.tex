@@ -1,6 +1,8 @@
 \section{Method}
 
-We present \method, a split-context prompting method with three phases that directly address the challenges identified in Section~\ref{sec:intro}.
+\input{figs/architecture}
+
+We present \method, a split-context prompting method with three phases (Figure~\ref{fig:architecture}).
 \emph{Planning} decomposes requests into evidence-specific conditions, handling structured text and compositional logic.
 \emph{Adaptation} detects heterogeneity and adversarial content before execution.
 \emph{Execution} aggregates evidence using three-valued logic with correct uncertainty propagation.
@@ -48,5 +50,5 @@ Execution runs the (possibly adapted) script step-by-step.
 Variable references are resolved dynamically: \texttt{\{(input)\}} becomes the current item's data, and \texttt{\{(N)\}} becomes the output of step $N$.
 Each evidence source is processed independently, preventing cross-contamination between metadata checks and review analysis.
 
-The final step aggregates evidence using three-valued logic (Section~\ref{sec:three-valued}), ensuring correct compositional reasoning: for AND, any violation dominates; for OR, any satisfaction dominates; unknown values propagate only when they could affect the outcome.
+The final step aggregates evidence using three-valued logic (Section~\ref{sec:problem}), ensuring correct compositional reasoning: for AND, any violation dominates; for OR, any satisfaction dominates; unknown values propagate only when they could affect the outcome.
 This preserves minority viewpoints---a single negative review is not drowned out by neutral ones.

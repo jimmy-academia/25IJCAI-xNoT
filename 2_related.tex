@@ -1,29 +1,17 @@
 \section{Related Work}
 
-\subsection{Full-Context Prompting Methods}
-
+\paragraph{Full-Context Prompting.}
 Full-context methods process all information within a single LLM context window.
-Chain-of-Thought~\cite{wei2022chain} prompts LLMs to generate intermediate reasoning steps, while Self-Consistency~\cite{wang2022self} samples multiple paths and selects the most consistent answer.
-ReAct~\cite{yao2022react} interleaves reasoning with actions in a multi-turn loop; Plan-and-Solve~\cite{wang2023plan} generates explicit plans before execution; Self-Ask~\cite{press2022measuring} decomposes questions into sub-questions answered sequentially.
-Least-to-Most~\cite{zhou2022least} breaks problems into simpler subproblems solved incrementally.
-Despite their diversity, these methods share a fundamental limitation: they conflate evidence from different sources within a shared context, making them vulnerable to distraction from irrelevant content and adversarial manipulation.
+Chain-of-Thought~\cite{wei2022chain} generates intermediate reasoning steps; Self-Consistency~\cite{wang2022self} samples multiple paths and selects via majority vote.
+ReAct~\cite{yao2022react} interleaves reasoning with actions; Plan-and-Solve~\cite{wang2023plan} generates explicit plans; Self-Ask~\cite{press2022measuring} and Least-to-Most~\cite{zhou2022least} decompose problems into subproblems.
+These methods conflate evidence from different sources within a shared context, making them vulnerable to distraction and adversarial manipulation.
 
-\subsection{Split-Context Methods and Robustness}
-
+\paragraph{Split-Context Methods.}
 Split-context methods isolate input segments, processing each separately before aggregation.
-Decomposed Prompting~\cite{khot2022decomposed} uses specialized sub-task handlers orchestrated by a decomposer, providing natural isolation between evidence sources.
-However, it employs static handlers without adapting to input content or detecting potential attacks.
+Decomposed Prompting~\cite{khot2022decomposed} uses specialized sub-task handlers orchestrated by a decomposer, but employs static handlers without adapting to input content.
+Ranking methods also vary in context handling: pairwise~\cite{qin2023large} and setwise~\cite{sun2023chatgpt} approaches compare candidates in groups, while pointwise scoring~\cite{liang2022holistic} rates each candidate independently---naturally supporting split-context processing where each item is evaluated in isolation.
 
-Real-world multi-source data is vulnerable to adversarial manipulation.
-Prompt injection embeds malicious instructions within user-provided content~\cite{perez2022ignore,greshake2023not}, while fake reviews and coordinated manipulation are endemic to online platforms~\cite{mukherjee2013yelp}.
-Defense prompts~\cite{jain2023baseline} add explicit warnings about potential attacks, but this approach requires distinguishing adversarial from genuine content at inference time.
-
-Our work extends the split-context paradigm with adaptive planning that maps requirements to evidence sources, content-aware detection of heterogeneity and attacks before execution, and three-valued logic aggregation with explicit uncertainty handling.
-
-\subsection{LLM-based Ranking}
-
-Ranking methods vary in how they compare candidates.
-Pairwise methods~\cite{qin2023large} compare candidates in pairs, requiring $O(n^2)$ calls; setwise approaches~\cite{sun2023chatgpt} use tournament-style elimination with $O(n \log n)$ calls.
-Listwise methods like RankGPT produce complete rankings in a single call but struggle with long or heterogeneous descriptions.
-Pointwise scoring~\cite{liang2022holistic} rates each candidate independently, naturally supporting split-context processing where each candidate is evaluated in isolation.
-Our evaluation includes both reasoning-based and ranking-based methods to understand their interaction with context handling.
+\paragraph{Adversarial Robustness.}
+Real-world multi-source data faces adversarial threats.
+Prompt injection embeds malicious instructions within user-provided content~\cite{perez2022ignore,greshake2023not}; fake reviews and coordinated manipulation are endemic to online platforms~\cite{mukherjee2013yelp}.
+Defense prompts~\cite{jain2023baseline} add explicit warnings but require distinguishing adversarial from genuine content at inference time---a challenge our Adaptation phase addresses through content-aware detection before execution.

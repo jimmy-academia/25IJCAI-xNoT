@@ -1,0 +1,152 @@
+% ANoT Architecture Figure
+% Include in main document with: \input{figs/architecture}
+% Requires: \usepackage{tikz}
+%           \usetikzlibrary{shapes.geometric, arrows.meta, positioning, fit, backgrounds, calc}
+
+\begin{figure*}[t]
+\centering
+\begin{tikzpicture}[
+    % Node styles
+    phase/.style={
+        rectangle, rounded corners=3pt,
+        minimum width=2.8cm, minimum height=0.8cm,
+        font=\footnotesize\bfseries, text=white
+    },
+    phase1/.style={phase, fill=blue!70!black},
+    phase2/.style={phase, fill=orange!80!black},
+    phase3/.style={phase, fill=green!60!black},
+    box/.style={
+        rectangle, rounded corners=2pt, draw=gray!60,
+        fill=gray!8, minimum width=2.4cm, minimum height=0.6cm,
+        font=\scriptsize, align=center
+    },
+    smallbox/.style={
+        rectangle, rounded corners=2pt, draw=gray!50,
+        fill=white, minimum width=1.8cm, minimum height=0.5cm,
+        font=\tiny, align=center
+    },
+    input/.style={
+        rectangle, rounded corners=2pt, draw=blue!60, fill=blue!10,
+        minimum width=2cm, minimum height=0.6cm,
+        font=\scriptsize, align=center
+    },
+    output/.style={
+        rectangle, rounded corners=2pt, draw=green!60!black, fill=green!10,
+        minimum width=1.6cm, minimum height=0.6cm,
+        font=\scriptsize\bfseries, align=center
+    },
+    arrow/.style={-{Stealth[length=2mm]}, thick, gray!70},
+    dasharrow/.style={-{Stealth[length=2mm]}, thick, gray!50, dashed},
+    phasebox/.style={
+        rectangle, rounded corners=5pt, draw=gray!40,
+        fill=gray!3, inner sep=8pt
+    },
+    evidence/.style={
+        rectangle, rounded corners=2pt, draw=purple!50, fill=purple!8,
+        minimum width=1.4cm, minimum height=0.45cm,
+        font=\tiny, align=center
+    },
+    llmcall/.style={
+        rectangle, rounded corners=2pt, draw=red!50, fill=red!8,
+        minimum width=1.2cm, minimum height=0.4cm,
+        font=\tiny, align=center
+    }
+]
+
+% ===== INPUT =====
+\node[input] (request) at (0, 0) {User Request\\``quiet + WiFi + matcha''};
+\node[input, below=0.3cm of request] (items) {Candidate Items\\$I_1, I_2, \ldots, I_n$};
+
+% ===== PHASE 1: PLANNING =====
+\node[phase1] (p1title) at (4.2, 0.8) {Phase 1: Planning};
+
+\node[box, below=0.15cm of p1title] (plangen) {Plan Generation};
+\node[box, below=0.1cm of plangen] (planval) {Plan Validation};
+\node[box, below=0.1cm of planval] (script) {Script (LWT)};
+
+% Validation loop
+\draw[dasharrow, bend left=50] (planval.east) to node[right, font=\tiny, text=gray] {refine} (plangen.east);
+
+% Phase 1 background
+\begin{scope}[on background layer]
+    \node[phasebox, fit=(p1title)(plangen)(planval)(script), inner sep=6pt] (p1box) {};
+\end{scope}
+
+% ===== PHASE 2: ADAPTATION =====
+\node[phase2] (p2title) at (8.2, 0.8) {Phase 2: Adaptation};
+
+\node[box, below=0.15cm of p2title, minimum width=2.6cm] (detect) {Content Detection};
+\node[smallbox, below=0.08cm of detect, xshift=-0.7cm] (het) {Heterogeneity};
+\node[smallbox, below=0.08cm of detect, xshift=0.7cm] (atk) {Attacks};
+\node[box, below=0.4cm of detect, minimum width=2.6cm] (modify) {Workflow Modify};
+
+% Phase 2 background
+\begin{scope}[on background layer]
+    \node[phasebox, fit=(p2title)(detect)(het)(atk)(modify), inner sep=6pt] (p2box) {};
+\end{scope}
+
+% ===== PHASE 3: EXECUTION =====
+\node[phase3] (p3title) at (12.8, 0.8) {Phase 3: Execution};
+
+% Split context illustration
+\node[evidence, below=0.15cm of p3title, xshift=-1cm] (meta) {Metadata\\check};
+\node[evidence, below=0.15cm of p3title, xshift=0cm] (hours) {Hours\\check};
+\node[evidence, below=0.15cm of p3title, xshift=1cm] (rev) {Review\\analysis};
+
+% LLM calls (isolated)
+\node[llmcall, below=0.08cm of meta] (llm1) {LLM};
+\node[llmcall, below=0.08cm of hours] (llm2) {LLM};
+\node[llmcall, below=0.08cm of rev] (llm3) {LLM};
+
+% Three-valued results
+\node[font=\tiny, below=0.05cm of llm1] (r1) {$+1$};
+\node[font=\tiny, below=0.05cm of llm2] (r2) {$+1$};
+\node[font=\tiny, below=0.05cm of llm3] (r3) {$0$};
+
+% Aggregation
+\node[box, below=0.5cm of hours, minimum width=2.8cm, fill=green!15, draw=green!50] (agg) {Three-Valued Aggregation\\$\land: \min$ \quad $\lor: \max$};
+
+% Phase 3 background
+\begin{scope}[on background layer]
+    \node[phasebox, fit=(p3title)(meta)(hours)(rev)(llm1)(llm2)(llm3)(r1)(r2)(r3)(agg), inner sep=6pt] (p3box) {};
+\end{scope}
+
+% ===== OUTPUT =====
+\node[output, right=0.5cm of agg] (result) {Result\\$\sigma(I, R)$};
+
+% ===== ARROWS =====
+% Input to Phase 1
+\draw[arrow] (request.east) -- ++(0.5,0) |- (plangen.west);
+\draw[arrow] (items.east) -- ++(0.3,0) |- ($(p1box.south west)+(0.3,0.2)$);
+
+% Phase 1 to Phase 2
+\draw[arrow] (script.east) -- (detect.west);
+
+% Phase 2 to Phase 3
+\draw[arrow] (modify.east) -- ($(p3box.west)+(0,-0.8)$);
+
+% Items to Phase 3
+\draw[arrow, gray!50] (items.east) -- ++(0.3,0) |- ($(p3box.south west)+(0.3,0.15)$);
+
+% Evidence to aggregation
+\draw[arrow, thin] (r1.south) -- ++(0,-0.15) -| ($(agg.north)+(-0.6,0)$);
+\draw[arrow, thin] (r2.south) -- ($(agg.north)$);
+\draw[arrow, thin] (r3.south) -- ++(0,-0.15) -| ($(agg.north)+(0.6,0)$);
+
+% Aggregation to result
+\draw[arrow] (agg.east) -- (result.west);
+
+% ===== ANNOTATIONS =====
+% Key insight callout
+\node[font=\tiny\itshape, text=gray, align=center, below=0.1cm of p3box] (insight) {Split-context: each source processed independently};
+
+% Cache annotation
+\node[font=\tiny, text=blue!60, above=0.05cm of p1box.north east, anchor=south east] {cached per request};
+
+% Per-item annotation
+\node[font=\tiny, text=orange!70, above=0.05cm of p2box.north east, anchor=south east] {per item};
+
+\end{tikzpicture}
+\caption{Overview of the ANoT architecture. \textbf{Phase 1 (Planning)} transforms user requests into validated executable scripts, cached across items. \textbf{Phase 2 (Adaptation)} detects content heterogeneity and potential attacks before execution. \textbf{Phase 3 (Execution)} processes each evidence source independently via split-context LLM calls, then aggregates results using three-valued logic ($+1$: satisfied, $0$: unknown, $-1$: violated).}
+\label{fig:architecture}
+\end{figure*}

@@ -1,0 +1,144 @@
+\begin{thebibliography}{}
+
+\bibitem[\protect\citeauthoryear{Cao \bgroup \em et al.\egroup
+  }{2024}]{zhao2024struceval}
+Boxi Cao, Mengjie Ren, Hongyu Lin, Xianpei Han, Feng Zhang, Junfeng Zhan, and
+  Le~Sun.
+\newblock {StructEval}: Deepen and broaden large language model assessment via
+  structured evaluation.
+\newblock In {\em Findings of the Association for Computational Linguistics:
+  ACL 2024}, pages 5300--5318. Association for Computational Linguistics, 2024.
+
+\bibitem[\protect\citeauthoryear{Fitting}{1985}]{fitting1985kripke}
+Melvin Fitting.
+\newblock A kripke-kleene semantics for logic programs.
+\newblock {\em J. Log. Program.}, 2(4):295--312, 1985.
+
+\bibitem[\protect\citeauthoryear{Greshake \bgroup \em et al.\egroup
+  }{2023}]{greshake2023not}
+Kai Greshake, Sahar Abdelnabi, Shailesh Mishra, Christoph Endres, Thorsten
+  Holz, and Mario Fritz.
+\newblock Not what you've signed up for: Compromising real-world llm-integrated
+  applications with indirect prompt injection.
+\newblock In {\em Proceedings of the 16th ACM Workshop on Artificial
+  Intelligence and Security}, 2023.
+
+\bibitem[\protect\citeauthoryear{Gu \bgroup \em et al.\egroup
+  }{2024}]{zhou2024structext}
+Zhouhong Gu, Haoning Ye, Xingzhou Chen, Zeyang Zhou, Hongwei Feng, and Yanghua
+  Xiao.
+\newblock {StrucText-Eval}: Evaluating large language model's reasoning ability
+  in structure-rich text.
+\newblock {\em arXiv preprint arXiv:2406.10621}, 2024.
+
+\bibitem[\protect\citeauthoryear{Jain \bgroup \em et al.\egroup
+  }{2023}]{jain2023baseline}
+Neel Jain, Avi Schwarzschild, Yuxin Wen, Gowthami Somepalli, John Kirchenbauer,
+  Ping-yeh Chiang, Micah Goldblum, Aniruddha Saha, Jonas Geiping, and Tom
+  Goldstein.
+\newblock Baseline defenses for adversarial attacks against aligned language
+  models.
+\newblock {\em arXiv preprint arXiv:2309.00614}, 2023.
+
+\bibitem[\protect\citeauthoryear{Khot \bgroup \em et al.\egroup
+  }{2022}]{khot2022decomposed}
+Tushar Khot, Harsh Trivedi, Matthew Finlayson, Yao Fu, Kyle Richardson, Peter
+  Clark, and Ashish Sabharwal.
+\newblock Decomposed prompting: A modular approach for solving complex tasks.
+\newblock {\em arXiv preprint arXiv:2210.02406}, 2022.
+
+\bibitem[\protect\citeauthoryear{Liang \bgroup \em et al.\egroup
+  }{2023}]{liang2022holistic}
+Percy Liang, Rishi Bommasani, Tony Lee, Dimitris Tsipras, Dilara Soylu,
+  Michihiro Yasunaga, Yian Zhang, Deepak Narayanan, Yuhuai Wu, Ananya Kumar,
+  et~al.
+\newblock Holistic evaluation of language models.
+\newblock {\em Transactions on Machine Learning Research}, 2023.
+
+\bibitem[\protect\citeauthoryear{Mukherjee \bgroup \em et al.\egroup
+  }{2013}]{mukherjee2013yelp}
+Arjun Mukherjee, Vivek Venkataraman, Bing Liu, and Natalie~S. Glance.
+\newblock What yelp fake review filter might be doing?
+\newblock In {\em Proceedings of the International AAAI Conference on Web and
+  Social Media}. AAAI Press, 2013.
+
+\bibitem[\protect\citeauthoryear{Perez and Ribeiro}{2022}]{perez2022ignore}
+F{\'a}bio Perez and Ian Ribeiro.
+\newblock Ignore previous prompt: Attack techniques for language models.
+\newblock {\em arXiv preprint arXiv:2211.09527}, 2022.
+
+\bibitem[\protect\citeauthoryear{Press \bgroup \em et al.\egroup
+  }{2023}]{press2022measuring}
+Ofir Press, Muru Zhang, Sewon Min, Ludwig Schmidt, Noah~A. Smith, and Mike
+  Lewis.
+\newblock Measuring and narrowing the compositionality gap in language models.
+\newblock In {\em Findings of the Association for Computational Linguistics:
+  EMNLP 2023}, 2023.
+
+\bibitem[\protect\citeauthoryear{Qin \bgroup \em et al.\egroup
+  }{2023}]{qin2023large}
+Yujia Qin, Shengding Hu, Yankai Lin, Weize Chen, Ning Ding, Ganqu Cui, Zheni
+  Zeng, et~al.
+\newblock Tool learning with foundation models.
+\newblock {\em arXiv preprint arXiv:2304.08354}, 2023.
+
+\bibitem[\protect\citeauthoryear{Sun \bgroup \em et al.\egroup
+  }{2023}]{sun2023chatgpt}
+Weiwei Sun, Lingyong Yan, Xinyu Ma, Pengjie Ren, Dawei Yin, and Zhaochun Ren.
+\newblock Is chatgpt good at search? investigating large language models as
+  re-ranking agents.
+\newblock In {\em Proceedings of the 2023 Conference on Empirical Methods in
+  Natural Language Processing}, 2023.
+
+\bibitem[\protect\citeauthoryear{Wang \bgroup \em et al.\egroup
+  }{2023a}]{wang2023plan}
+Lei Wang, Wanyu Xu, Yihuai Lan, Zhiqiang Hu, Yunshi Lan, Roy Ka-Wei Lee, and
+  Ee-Peng Lim.
+\newblock Plan-and-solve prompting: Improving zero-shot chain-of-thought
+  reasoning by large language models.
+\newblock In {\em Proceedings of the 61st Annual Meeting of the Association for
+  Computational Linguistics (Volume 1: Long Papers)}. Association for
+  Computational Linguistics, 2023.
+
+\bibitem[\protect\citeauthoryear{Wang \bgroup \em et al.\egroup
+  }{2023b}]{wang2022self}
+Xuezhi Wang, Jason Wei, Dale Schuurmans, Quoc Le, Ed~Chi, Sharan Narang,
+  Aakanksha Chowdhery, and Denny Zhou.
+\newblock Self-consistency improves chain of thought reasoning in language
+  models.
+\newblock In {\em International Conference on Learning Representations}, 2023.
+
+\bibitem[\protect\citeauthoryear{Wang \bgroup \em et al.\egroup
+  }{2024}]{chen2025survey}
+Lei Wang, Chen Ma, Xueyang Feng, Zeyu Zhang, Hao Yang, Jingsen Zhang, Zhiyuan
+  Chen, Jiakai Tang, Xu~Chen, Yankai Lin, Wayne~Xin Zhao, Zhewei Wei, and
+  Ji-Rong Wen.
+\newblock A survey on large language model based autonomous agents.
+\newblock {\em Frontiers of Computer Science}, 2024.
+
+\bibitem[\protect\citeauthoryear{Wei \bgroup \em et al.\egroup
+  }{2022}]{wei2022chain}
+Jason Wei, Xuezhi Wang, Dale Schuurmans, Maarten Bosma, Brian Ichter, Fei Xia,
+  Ed~Chi, Quoc~V Le, and Denny Zhou.
+\newblock Chain-of-thought prompting elicits reasoning in large language
+  models.
+\newblock In {\em Advances in Neural Information Processing Systems},
+  volume~35, pages 24824--24837. Curran Associates, Inc., 2022.
+
+\bibitem[\protect\citeauthoryear{Yao \bgroup \em et al.\egroup
+  }{2023}]{yao2022react}
+Shunyu Yao, Jeffrey Zhao, Dian Yu, Nan Du, Izhak Shafran, Karthik Narasimhan,
+  and Yuan Cao.
+\newblock {ReAct}: Synergizing reasoning and acting in language models.
+\newblock In {\em International Conference on Learning Representations}, 2023.
+
+\bibitem[\protect\citeauthoryear{Zhou \bgroup \em et al.\egroup
+  }{2023}]{zhou2022least}
+Denny Zhou, Nathanael Sch{\"a}rli, Le~Hou, Jason Wei, Nathan Scales, Xuezhi
+  Wang, Dale Schuurmans, Claire Cui, Olivier Bousquet, Quoc~V. Le, and Ed~H.
+  Chi.
+\newblock Least-to-most prompting enables complex reasoning in large language
+  models.
+\newblock In {\em International Conference on Learning Representations}, 2023.
+
+\end{thebibliography}
