@@ -1,19 +1,19 @@
 \section{Introduction}
 
-Large language models (LLMs) are increasingly deployed in applications that require reasoning over \emph{structured, multi-source data}---information combining rich metadata with unstructured content from multiple contributors~\citep{chen2025survey}.
+Large language models (LLMs) are increasingly deployed in applications that require reasoning over \emph{structured, multi-source data}---information combining rich metadata with unstructured content from multiple contributors~\cite{chen2025survey}.
 Consider a recommendation system: to match a user's query (``quiet cafe with free WiFi, open Monday afternoon, where reviews mention good matcha''), an LLM must jointly reason over structured attributes, temporal constraints, and dozens of customer reviews.
 Such scenarios are ubiquitous---from e-commerce product search to healthcare record analysis to legal document review---yet existing prompt schemes provide inadequate support.
 
 This setting presents three interrelated challenges.
-\emph{First}, multi-source data introduces heterogeneity and adversarial vulnerability: user-generated content exhibits uneven quality, and real-world platforms are susceptible to fake reviews, prompt injection attacks, and coordinated manipulation~\citep{greshake2023not}.
-\emph{Second}, structured text requires distinct handling from unstructured text; LLMs struggle to jointly process hierarchical metadata alongside free-form content without conflating evidence types~\citep{zhao2024struceval,zhou2024structext}.
+\emph{First}, multi-source data introduces heterogeneity and adversarial vulnerability: user-generated content exhibits uneven quality, and real-world platforms are susceptible to fake reviews, prompt injection attacks, and coordinated manipulation~\cite{greshake2023not}.
+\emph{Second}, structured text requires distinct handling from unstructured text; LLMs struggle to jointly process hierarchical metadata alongside free-form content without conflating evidence types~\cite{zhao2024struceval,zhou2024structext}.
 \emph{Third}, complex user requests involve compositional logic with nested conditions, requiring models to correctly parse operator precedence and propagate uncertainty across subexpressions.
 These difficulties are pervasive in practice, yet no existing prompt scheme adequately addresses their combination.
 
 Existing prompting methods fall into two categories based on how they handle input data.
-\emph{Full-context schemes}---including Chain-of-Thought~\citep{wei2022chain}, ReAct~\citep{yao2022react}, and Least-to-Most~\citep{zhou2022least}---process all available information in a single LLM call.
+\emph{Full-context schemes}---including Chain-of-Thought~\cite{wei2022chain}, ReAct~\cite{yao2022react}, and Least-to-Most~\cite{zhou2022least}---process all available information in a single LLM call.
 While effective for homogeneous text, these methods degrade on structured multi-source data: they conflate evidence from different sources and prove vulnerable to adversarial content that exploits the shared context.
-\emph{Split-context schemes}---such as Decomposed Prompting~\citep{khot2022decomposed}---process information in separate calls, achieving better modularity.
+\emph{Split-context schemes}---such as Decomposed Prompting~\cite{khot2022decomposed}---process information in separate calls, achieving better modularity.
 However, existing split-context methods still fall short: they lack content-aware adaptation to detect attacks before execution, provide no explicit evidence tracking across sources, and do not support compositional logic aggregation with uncertainty handling.
 
 We propose \textbf{\methodfull (\method)}, a split-context prompt scheme that addresses all three challenges through a principled three-phase architecture.
