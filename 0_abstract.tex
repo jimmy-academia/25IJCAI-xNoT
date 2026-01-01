@@ -1,6 +1,4 @@
 
 \begin{abstract}
-    With the development of Large Language Models, we are given an opportunity to process large quantities of heterogeneous user-generated text to gain new knowledge that are . However
-    
-    to aggregate and operate user generated text to 
+Large language models (LLMs) struggle when reasoning over structured, multi-source data with complex Boolean conditions. Existing full-context prompting methods conflate evidence from different sources, fail to isolate relevant information, and remain vulnerable to adversarial manipulation embedded in user-generated content. We introduce \textbf{ANoT} (\textbf{A}daptive \textbf{N}etwork \textbf{o}f \textbf{T}hought), a split-context prompting method that addresses these challenges by decomposing reasoning into isolated, verifiable steps. ANoT operates in three phases: (1) \emph{Planning} decomposes user queries into structured conditions mapped to specific evidence sources; (2) \emph{Adaptation} analyzes data content to detect heterogeneity and potential attacks before execution; and (3) \emph{Execution} aggregates evidence using three-valued logic that explicitly handles uncertainty while preserving minority viewpoints. On a structured recommendation benchmark constructed from Yelp Open Dataset---featuring 50 Boolean queries across 10 complexity categories and 8 adversarial attack types---ANoT outperforms 13 baseline prompting methods by +16\% on clean data while maintaining consistent performance under attacks where baselines degrade significantly.
 \end{abstract}

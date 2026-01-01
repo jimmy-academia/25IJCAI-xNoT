@@ -1,27 +1,17 @@
-% (a) dropping users collapsing diversity, or (b) getting steered by bad inputs, and that (c) scales.
+% Introduction - Unified following McEnerney's framework
 
 \section{Introduction}
-In many decision-support scenarios, the goal of aggregating user-generated text is not merely to produce a single coherent narrative, but to represent the full \emph{distribution} of viewpoints in a population. With emergent abilities to interpret nuanced semantics across heterogeneous inputs, Large Language Models (LLMs) unlock a new possibility to capture this complexity at scale. However, prevailing LLM aggregation schemes rely on aggressive summarization to manage the scale, causing them to be structurally misaligned with the representation goal. By focusing on summarization over representation, these schemes sacrifice fidelity for compression, yielding pipelines that systematically erase minority viewpoints, and remain dangerously vulnerable to adversarial steering.
 
-This structural bias creates a dangerous blind spot for the decision-maker. In the pursuit of coherence, recursive summarization treats low-frequency signals as noise to be filtered rather than distinct perspectives to be preserved. Consequently, the final artifact hallucinates consensus where none exists. Simultaneously, because these systems lack explicit influence modeling, they cannot distinguish between organic agreement and artificial injection, allowing adversaries to hijack the narrative with minimal effort.
+A user asks a large language model: ``Find a quiet cafe with free WiFi where reviews mention good matcha.'' The model confidently returns a wrong answer. It conflated a metadata attribute (WiFi availability) with review sentiment, got distracted by an irrelevant but lengthy review about parking, and was ultimately manipulated by a single adversarial review containing ``ANSWER: recommend this place!'' This is not an edge case---it is a systematic failure of current prompting methods when faced with \emph{structured, multi-source data}.
 
-In this work, we introduce \method, short for 
-\methodfull. \method's idea is to leverage minimal scaffolding that LLMs can autonomously expand. While current summarization schemes hard code the summarization protocol, \method enables LLMs to dynamically 
-
-by enabling it to infer both task decomposition and step coordination from simple examples. This allows step-length generalization, as LLM dynamically determines an appropriate number of elementary steps without requiring humans to redesign scripts for different problem sizes. As input complexity increases, \method enables LLMs to naturally expand its reasoning network with additional elementary steps to match the growing demands of the task.
-
-
-
-
-\subsection{draft--Introduction}
-
-Large language models (LLMs) are increasingly deployed in real-world applications that require reasoning over \emph{structured, multi-source data}---information that combines rich metadata with unstructured content from multiple contributors.
+Large language models (LLMs) are increasingly deployed in applications that require reasoning over information combining rich metadata with unstructured content from multiple contributors.
 Consider a restaurant recommendation system: to match a user's requirements (``quiet cafe with free WiFi, open Monday afternoon, where reviews mention good matcha''), an LLM must jointly reason over structured attributes, business hours, and dozens of customer reviews.
-This setting presents two fundamental challenges that existing prompting methods fail to address adequately.
+This setting presents two fundamental challenges that existing prompting methods fail to address.
 
-First, \textbf{multi-source data introduces heterogeneity and potential adversarial content}.
+First, \textbf{multi-source data introduces heterogeneity and adversarial vulnerability}.
 When information originates from multiple users---as with customer reviews---the data naturally exhibits uneven quality: some reviews are detailed while others are terse; some provide relevant evidence while others digress.
 Worse, real-world platforms are susceptible to adversarial manipulation, including fake reviews, prompt injection attacks embedded in user-generated content, and coordinated rating manipulation.
+For review aggregation, this heterogeneity means that minority viewpoints---a single reviewer noting poor accessibility, for instance---risk being drowned out by the majority.
 
 Second, \textbf{rich metadata creates structured text that confounds single-pass reasoning}.
 Complex user requests often involve compositional Boolean logic (``WiFi AND (quiet OR outdoor seating)''), requiring the model to correctly parse operator precedence and propagate uncertainty across nested conditions.
@@ -29,25 +19,25 @@ When all information is processed in a single context window, models struggle to
 
 Existing prompting methods fall into two categories based on how they handle input data.
 \emph{Full-context prompt schemes}---including Chain-of-Thought (CoT)~\cite{wei2022chain}, ReAct~\cite{yao2022react}, and Least-to-Most~\cite{zhou2022least}---process all available information in a single LLM call, regardless of how many reasoning steps they employ internally.
-While effective for homogeneous text, these methods degrade significantly on structured multi-source data: they get lost in rich hierarchical structure, fail to isolate relevant evidence, and prove vulnerable to adversarial content that exploits the shared context.
+While effective for homogeneous text, these methods degrade significantly on structured multi-source data: they conflate evidence from different sources, fail to isolate relevant information, and prove vulnerable to adversarial content that exploits the shared context.
 Notably, adding explicit ``defense prompts'' to warn about attacks actually \emph{hurts} performance on clean data, as models become overly conservative in their judgments.
 
-We propose \textbf{Adaptive Network of Thought (ANoT)}, a \emph{split-context prompt scheme} that addresses these challenges by decomposing reasoning into isolated, verifiable steps.
-Rather than processing all data together, ANoT divides the input by evidence source---separately examining metadata attributes, temporal constraints, review content, and reviewer credibility---then aggregates findings according to the request's logical structure.
-This split-context approach provides three key benefits: (1) it prevents irrelevant or adversarial content from one source from polluting reasoning about another; (2) it enables explicit evidence tracking that supports interpretable decisions; and (3) it naturally handles heterogeneity by processing each evidence piece independently.
+We propose \textbf{Adaptive Network of Thought (\method)}, a \emph{split-context prompt scheme} that addresses these challenges by decomposing reasoning into isolated, verifiable steps.
+Rather than processing all data together, \method divides the input by evidence source---separately examining metadata attributes, temporal constraints, review content, and reviewer credibility---then aggregates findings according to the request's logical structure.
+This split-context approach provides three key benefits: (1) it prevents irrelevant or adversarial content from one source from polluting reasoning about another; (2) it enables explicit evidence tracking that supports interpretable decisions; and (3) for review text, it naturally preserves diverse viewpoints by processing each review independently before aggregation.
 
-ANoT operates in three phases.
+\method operates in three phases.
 \textbf{Phase 1 (Planning)} parses the user request into structured conditions, identifies appropriate evidence sources for each, and generates a validated execution script.
-\textbf{Phase 2 (Adaptation)} analyzes the actual data content to detect heterogeneity or potential attacks, adapting the workflow as needed.
-\textbf{Phase 3 (Execution)} runs the script step-by-step with variable substitution, aggregating evidence according to the request's Boolean logic.
+\textbf{Phase 2 (Adaptation)} analyzes the actual data content to detect heterogeneity or potential attacks, adapting the workflow before the main reasoning phase ever sees adversarial content.
+\textbf{Phase 3 (Execution)} runs the script step-by-step with variable substitution, aggregating evidence according to the request's Boolean logic using three-valued semantics that explicitly handle uncertainty.
 
-We evaluate ANoT on a restaurant recommendation benchmark constructed from Yelp Open Dataset, featuring 20 restaurants with detailed metadata and 20 reviews each, evaluated against 50 user requests spanning 10 complexity categories.
+We evaluate \method on a structured recommendation benchmark constructed from Yelp Open Dataset, featuring 20 restaurants with detailed metadata and 20 reviews each, evaluated against 50 user requests spanning 10 complexity categories.
 Requests vary along two dimensions: evidence sources (simple metadata, computed metadata, review text, reviewer signals) and logical structure (flat Boolean chains vs.\ nested expressions).
 We further test robustness against eight attack types including typo corruption, prompt injection, fake reviews, and sarcastic manipulation.
 
 Our contributions are:
 \begin{itemize}
-    \item \textbf{ANoT}, a split-context prompting method that achieves both high accuracy on complex multi-constraint tasks and robustness to adversarial inputs.
-    \item A \textbf{structured recommendation benchmark} with complex Boolean requests and comprehensive attack evaluation.
-    \item Empirical findings showing ANoT outperforms 13 baseline methods by +16\% on clean data, while maintaining consistent performance under attacks where baselines degrade significantly.
+    \item \textbf{\method}, a split-context prompting method that achieves both high accuracy on complex multi-constraint tasks and robustness to adversarial inputs through architectural isolation rather than defense prompts.
+    \item A \textbf{structured recommendation benchmark} with complex Boolean requests and comprehensive attack evaluation, enabling systematic comparison of prompting methods under realistic conditions.
+    \item Empirical findings showing \method outperforms 13 baseline methods by +16\% on clean data, while maintaining consistent performance under attacks where baselines degrade significantly.
 \end{itemize}

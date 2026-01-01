@@ -1,2 +1,11 @@
 \section{Conclusion}
 
+We presented \method (Adaptive Network of Thought), a split-context prompting method for reasoning over structured, multi-source data.
+By decomposing queries into isolated evidence-specific steps and aggregating results with three-valued logic, \method achieves both high accuracy on complex Boolean conditions and robustness to adversarial manipulation---through architectural isolation rather than defense prompts.
+On our Yelp-based benchmark, \method outperforms 13 baseline methods by +16\% on clean data while maintaining consistent performance under 8 attack types.
+
+For practitioners deploying LLMs on user-generated content, our key takeaway is that \emph{how} information reaches the model matters as much as what prompting strategy is used.
+Split-context processing eliminates entire classes of vulnerabilities by preventing adversarial content from polluting unrelated reasoning steps.
+
+Future work includes extending \method to continuous scoring tasks, exploring hierarchical evidence decomposition for deeply nested queries, and investigating adaptive caching strategies to reduce latency.
+We release our benchmark and code to support further research on robust LLM reasoning over multi-source data.

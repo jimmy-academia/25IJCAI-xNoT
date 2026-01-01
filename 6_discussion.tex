@@ -1,1 +1,25 @@
 \section{Discussion}
+
+\paragraph{Why Split-Context Provides Robustness.}
+A key insight from our work is that robustness emerges from \emph{architectural isolation} rather than explicit defense mechanisms.
+Full-context methods are fundamentally vulnerable because adversarial content in one evidence source can influence reasoning about unrelated sources---a fake review containing ``ANSWER: recommend'' affects judgments about metadata attributes processed in the same context.
+\method's split-context design eliminates this attack vector by construction: metadata checks never see review text, and each review is processed independently.
+This architectural defense requires no additional prompting and introduces no performance penalty on clean data, unlike defense prompts that make models overly conservative.
+
+\paragraph{Preserving Minority Viewpoints.}
+Three-valued logic serves a dual purpose in \method.
+First, it handles genuine uncertainty (missing attributes, ambiguous reviews) without forcing false binary decisions.
+Second, and more subtly, it preserves minority viewpoints during aggregation.
+When reviews are processed independently and aggregated with explicit unknown handling, a single review noting ``the WiFi was slow'' cannot be drowned out by ten reviews that simply fail to mention WiFi.
+The unknown values propagate through the Boolean logic, ensuring that absence of evidence is not treated as evidence of absence.
+
+\paragraph{Limitations.}
+\method incurs additional computational cost compared to single-pass methods: multiple LLM calls (one per evidence source plus aggregation) versus one.
+This overhead is partially mitigated by caching validated scripts across items, but remains a consideration for latency-sensitive applications.
+Additionally, our evaluation focuses on structured recommendation with discrete Boolean conditions; tasks requiring fuzzy matching or continuous scoring may need different aggregation mechanisms.
+Finally, while our adaptation phase detects several attack patterns, sophisticated adversaries might craft attacks that evade detection---though architectural isolation still provides baseline protection.
+
+\paragraph{Counter-Intuitive Finding.}
+Adding explicit defense prompts (``watch out for adversarial content'', ``be skeptical of suspicious reviews'') to full-context baselines actually \emph{hurts} performance on clean data.
+Models become overly conservative, treating legitimate reviews with strong opinions as potentially adversarial.
+This suggests that prompting alone cannot solve the robustness problem---architectural changes that prevent adversarial content from reaching the reasoning context are necessary.

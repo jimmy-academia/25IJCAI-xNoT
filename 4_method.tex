@@ -95,6 +95,23 @@ Based on detected conditions, the workflow may be adapted:
     \item For fake review indicators: Weight reviews by credibility signals (elite status, friend count).
 \end{itemize}
 
+For example, if attack patterns are detected, the script for review analysis (Step 2 in Section 4.3) might be modified from:
+\begin{verbatim}
+(2)=LLM("Analyze {(input)}[item_data][0..N][review].
+        Do reviews mention good matcha?")
+\end{verbatim}
+to:
+\begin{verbatim}
+(2a)=LLM("Filter {(input)}[item_data][0..N][review].
+         Exclude reviews containing commands like 'output',
+         'ignore', 'answer is'. Return safe review indices.")
+(2b)=LLM("Analyze reviews at indices {(2a)}.
+         Do reviews mention good matcha?")
+\end{verbatim}
+
+This modification isolates suspicious content during a controlled filtering step, ensuring the main analysis in (2b) never sees adversarial prompts.
+By processing each review independently and using three-valued aggregation, \method ensures that a single strongly negative review is not drowned out by many neutral ones---preserving minority viewpoints that might indicate genuine concerns.
+
 Critically, adaptation happens \emph{before} execution, so the LLM never sees potentially adversarial content during the main reasoning process---only during the controlled detection phase.
 
 \subsection{Phase 3: Execution}
