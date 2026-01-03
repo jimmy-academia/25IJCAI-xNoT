@@ -2,8 +2,10 @@
 
 \paragraph{Full-Context Prompting.}
 Full-context methods process all information within a single LLM context window.
-Chain-of-Thought~\cite{wei2022chain} generates intermediate reasoning steps; Self-Consistency~\cite{wang2022self} samples multiple paths and selects via majority vote.
-ReAct~\cite{yao2022react} interleaves reasoning with actions; Plan-and-Solve~\cite{wang2023plan} generates explicit plans; Self-Ask~\cite{press2022measuring} and Least-to-Most~\cite{zhou2022least} decompose problems into subproblems.
+Chain-of-Thought~\cite{wei2022chain} generates intermediate reasoning steps;
+Self-Consistency~\cite{wang2022self} samples multiple paths and selects via majority vote.
+ReAct~\cite{yao2022react} interleaves reasoning with actions; Plan-and-Solve~\cite{wang2023plan} generates explicit plans;
+Self-Ask~\cite{press2022measuring} and Least-to-Most~\cite{zhou2022least} decompose problems into subproblems.
 These methods conflate evidence from different sources within a shared context, making them vulnerable to distraction and adversarial manipulation.
 
 \paragraph{Split-Context Methods.}
@@ -11,7 +13,15 @@ Split-context methods isolate input segments, processing each separately before 
 Decomposed Prompting~\cite{khot2022decomposed} uses specialized sub-task handlers orchestrated by a decomposer, but employs static handlers without adapting to input content.
 Ranking methods also vary in context handling: pairwise~\cite{qin2023large} and setwise~\cite{sun2023chatgpt} approaches compare candidates in groups, while pointwise scoring~\cite{liang2022holistic} rates each candidate independently---naturally supporting split-context processing where each item is evaluated in isolation.
 
+\paragraph{Recursive and Structured Reasoning.}
+Recursive Language Models (RLMs)~\cite{wang2024recursive} introduce a framework where a root model interacts with an external environment (e.g., a Python REPL) to manage long contexts via recursive sub-calls.
+While ANoT also employs recursive decomposition, our approach differs in two fundamental ways.
+First, our recursion is \emph{task-centric} rather than context-centric: we isolate evidence to prevent adversarial contagion (robustness) rather than primarily to scale context length.
+Second, unlike RLM's free-form code generation, ANoT relies on a \emph{structured execution model} via Lightweight Workflow Templates (LWT).
+This constrained intermediate representation allows us to enforce strict data flow isolation and apply three-valued logic aggregation—guarantees that are difficult to verify when control flow is managed by arbitrary LLM-generated code.
+
 \paragraph{Adversarial Robustness.}
 Real-world multi-source data faces adversarial threats.
-Prompt injection embeds malicious instructions within user-provided content~\cite{perez2022ignore,greshake2023not}; fake reviews and coordinated manipulation are endemic to online platforms~\cite{mukherjee2013yelp}.
+Prompt injection embeds malicious instructions within user-provided content~\cite{perez2022ignore,greshake2023not};
+fake reviews and coordinated manipulation are endemic to online platforms~\cite{mukherjee2013yelp}.
 Defense prompts~\cite{jain2023baseline} add explicit warnings but require distinguishing adversarial from genuine content at inference time---a challenge our Adaptation phase addresses through content-aware detection before execution.
